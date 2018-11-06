@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.addon.saml.web.samlconnection.SamlConnectionBrowse"
+        focusComponent="samlConnectionsTable"
+        lookupComponent="samlConnectionsTable"
+        messagesPack="com.haulmont.addon.saml.web.samlconnection">
+    <dsContext>
+        <groupDatasource id="samlConnectionsDs"
+                         class="com.haulmont.addon.saml.entity.SamlConnection"
+                         view="connection.browse">
+            <query>
+                <![CDATA[select e from samladdon$SamlConnection e]]>
+            </query>
+        </groupDatasource>
+    </dsContext>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="samlConnectionsTable"
+            spacing="true">
+        <filter id="filter"
+                applyTo="samlConnectionsTable"
+                datasource="samlConnectionsDs">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="samlConnectionsTable"
+                    width="100%" multiselect="true">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="activation"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="active"/>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="spId"/>
+                <column id="idpMetadataUrl"/>
+                <column id="defaultGroup"/>
+                <column id="processingService"/>
+            </columns>
+            <rows datasource="samlConnectionsDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="samlConnectionsTable.create"/>
+                <button id="editBtn"
+                        action="samlConnectionsTable.edit"/>
+                <button id="activationBtn"
+                        action="samlConnectionsTable.activation"/>
+                <button id="removeBtn"
+                        action="samlConnectionsTable.remove"/>
+            </buttonsPanel>
+        </groupTable>
+    </layout>
+</window>

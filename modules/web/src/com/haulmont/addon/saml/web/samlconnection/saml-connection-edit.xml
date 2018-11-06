@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://editorCaption"
+        class="com.haulmont.addon.saml.web.samlconnection.SamlConnectionEdit"
+        datasource="samlConnectionDs"
+        focusComponent="fieldGroup"
+        messagesPack="com.haulmont.addon.saml.web.samlconnection">
+    <dsContext>
+        <datasource id="samlConnectionDs"
+                    class="com.haulmont.addon.saml.entity.SamlConnection"
+                    view="connection.edit">
+            <datasource id="keystoreDs"
+                        property="keystore"/>
+        </datasource>
+    </dsContext>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="metadataSplit"
+            spacing="true">
+        <groupBox caption="msg://captions.general" collapsable="true">
+            <fieldGroup id="fieldGroup"
+                        datasource="samlConnectionDs">
+                <column width="300px">
+                    <field property="name"/>
+                    <field property="code"/>
+                    <field property="active"/>
+                </column>
+                <column width="300px">
+                    <field property="keystoreLogin"/>
+                    <field property="keystorePassword">
+                        <passwordField datasource="samlConnectionDs" property="keystorePassword"/>
+                    </field>
+                    <field property="keystore"/>
+                </column>
+                <column width="300px">
+                    <field property="defaultGroup"/>
+                    <field property="processingService">
+                        <lookupField id="processingServiceField"
+                                     datasource="samlConnectionDs"
+                                     property="processingService"/>
+                    </field>
+                </column>
+            </fieldGroup>
+        </groupBox>
+        <split id="metadataSplit" width="100%" orientation="horizontal">
+            <vbox width="100%" height="100%" spacing="true" expand="spMetadataView" margin="true,true,false,false">
+                <hbox spacing="true" width="100%" expand="spIdField">
+                    <textField id="spIdField" datasource="samlConnectionDs" property="spId"
+                               inputPrompt="msg://captions.serviceProviderHint"/>
+                    <button id="spMetadataRefreshBtn" caption="msg://actions.refresh" icon="font-icon:REFRESH"/>
+                    <progressBar id="loadingSpMetadataBar"
+                                 align="MIDDLE_RIGHT"
+                                 stylename="indeterminate-circle"
+                                 visible="false"/>
+                </hbox>
+                <sourceCodeEditor id="spMetadataView"
+                                  editable="false"
+                                  mode="XML"
+                                  width="100%"/>
+            </vbox>
+            <vbox width="100%" height="100%" spacing="true" expand="idpMetadataView" margin="true">
+                <hbox spacing="true" width="100%" expand="idpMetadataUrlField">
+                    <textField id="idpMetadataUrlField" datasource="samlConnectionDs" property="idpMetadataUrl"
+                               inputPrompt="msg://captions.identityProviderHint"/>
+                    <button id="idpMetadataRefreshBtn" caption="msg://actions.refresh" icon="font-icon:REFRESH"/>
+                    <progressBar id="loadingIdpMetadataBar"
+                                 align="MIDDLE_RIGHT"
+                                 stylename="indeterminate-circle"
+                                 visible="false"/>
+                </hbox>
+                <sourceCodeEditor id="idpMetadataView"
+                                  editable="false"
+                                  mode="XML"
+                                  width="100%"/>
+            </vbox>
+        </split>
+        <frame id="windowActions"
+               screen="editWindowActions"/>
+    </layout>
+</window>

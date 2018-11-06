@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
+               dependsOn="com.haulmont.cuba">
+    <module blocks="*"
+            name="global">
+        <artifact appJar="true"
+                  name="saml-addon-global"/>
+        <property name="cuba.persistenceConfig"
+                  value="+com/haulmont/addon/saml/persistence.xml"/>
+        <property name="cuba.metadataConfig"
+                  value="+com/haulmont/addon/saml/metadata.xml"/>
+        <property name="cuba.viewsConfig"
+                  value="+com/haulmont/addon/saml/views.xml"/>
+    </module>
+    <module blocks="core"
+            dependsOn="global"
+            name="core">
+        <artifact appJar="true"
+                  name="saml-addon-core"/>
+        <property name="cuba.springContextConfig"
+                  value="+com/haulmont/addon/saml/spring.xml"/>
+        <property name="cuba.mainMessagePack"
+                  value="+com.haulmont.addon.saml.core"/>
+        <artifact classifier="db"
+                  configuration="dbscripts"
+                  ext="zip"
+                  name="saml-addon-core"/>
+    </module>
+    <module blocks="web"
+            dependsOn="global"
+            name="web">
+        <artifact appJar="true"
+                  name="saml-addon-web"/>
+        <artifact classifier="web"
+                  configuration="webcontent"
+                  ext="zip"
+                  name="saml-addon-web"/>
+        <property name="cuba.springContextConfig"
+                  value="+com/haulmont/addon/saml/web-spring.xml"/>
+        <property name="cuba.dispatcherSpringContextConfig"
+                  value="+com/haulmont/addon/saml/web-dispatcher-spring.xml"/>
+        <property name="cuba.windowConfig"
+                  value="+com/haulmont/addon/saml/web-screens.xml"/>
+        <property name="cuba.menuConfig"
+                  value="+com/haulmont/addon/saml/web-menu.xml"/>
+        <property name="cuba.permissionConfig"
+                  value="+com/haulmont/addon/saml/web-permissions.xml"/>
+        <property name="cuba.mainMessagePack"
+                  value="+com.haulmont.addon.saml.web"/>
+    </module>
+</app-component>

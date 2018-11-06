@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<screen-config xmlns="http://schemas.haulmont.com/cuba/screens.xsd">
+    <screen id="samladdon$SamlConnection.browse"
+            template="com/haulmont/addon/saml/web/samlconnection/saml-connection-browse.xml"/>
+    <screen id="samladdon$SamlConnection.edit"
+            template="com/haulmont/addon/saml/web/samlconnection/saml-connection-edit.xml"/>
+</screen-config>
