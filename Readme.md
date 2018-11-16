@@ -41,6 +41,36 @@ Then add a button to log in via the IDP SAML server. By pressing this button the
 
 Here is an example of implementation of the whole controller:
 
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.company.sd.web.screens.ExtAppLoginWindow"
+        extends="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"
+        xmlns:ext="http://schemas.haulmont.com/cuba/window-ext.xsd"
+        messagesPack="com.company.sd.web.screens">
+    <dialogMode height="600"
+                width="800"/>
+    <layout>
+        <vbox id="loginWrapper">
+            <vbox id="loginMainBox">
+                <grid id="loginFormLayout">
+                    <columns>
+                        <column id="loginFormCaptionColumn"/>
+                        <column id="loginFormFieldColumn"/>
+                    </columns>
+                    <rows>
+                        <row id="ssoRow" ext:index="0">
+                            <label id="ssoLookupFieldLabel" value="msg://captions.loginBy" align="MIDDLE_CENTER"/>
+                            <lookupField id="ssoLookupField" nullOptionVisible="true" align="MIDDLE_CENTER"/>
+                        </row>
+                    </rows>
+                </grid>
+            </vbox>
+        </vbox>
+    </layout>
+</window>
+```
+
 ```java
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
@@ -182,6 +212,11 @@ public class ExtAppLoginWindow extends AppLoginWindow {
         });
     }
 }
+```
+
+```
+captions.loginBy = Login by
+errors.message.samlLoginFailed = User '%s' hasn't been logged by SAML.
 ```
 
 You can observe the details of the implementation in the corresponding demo project.
