@@ -77,9 +77,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author kuchmin
- */
 public class ExtAppLoginWindow extends AppLoginWindow {
 
     private static final Logger log = LoggerFactory.getLogger(ExtAppLoginWindow.class);
@@ -196,6 +193,19 @@ Each Service Provider must have a unique secret/public connection key. To genera
 - https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys
 - https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys
 
+## Register IDP
+
+1. Navigate to `Administration` -> `SAML`
+2. Click `Create` button
+3. Fill the `Name` field - it will be shown to users on the login screen
+4. Fill the `Code` field - it will be internally
+5. Upload the keystore file and fill `Key Store Login` and `Key Store Password` fields
+6. Choose `Default access group` to be set to the new users logged with this IDP
+7. Choose `Processing service` to process the new users logged with this IDP
+8. Fill the `Service provider identity`. This field will be used by IDP, to identify the service provider. Example: `cuba-saml-demo`
+    Then click `Refresh` button. Copy the generated XML from the field below and register it in the IDP.
+9. Fill the `Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
+10. Click `Active` checkbox. After that the IDP will be shown on the login screen
 
 ### For static IDP (to be removed) 
 
