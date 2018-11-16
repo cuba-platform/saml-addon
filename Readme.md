@@ -234,7 +234,7 @@ Each Service Provider must have a unique secret/public connection key. To genera
 2. Click `Create` button
 3. Fill the `Name` field - it will be shown to users on the login screen
 4. Fill the `Code` field - it will be internally
-5. Upload the keystore file and fill `Key Store Login` and `Key Store Password` fields
+5. Upload the keystore file (generated in the previous section) and fill `Key Store Login` and `Key Store Password` fields
 6. Choose `Default access group` to be set to the new users logged with this IDP
 7. Choose `Processing service` to process the new users logged with this IDP
 8. Fill the `Service provider identity`. This field will be used by IDP, to identify the service provider. Example: `cuba-saml-demo`
