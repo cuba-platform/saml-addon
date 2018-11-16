@@ -41,6 +41,7 @@ Then add a button to log in via the IDP SAML server. By pressing this button the
 
 Here is an example of implementation of the whole controller:
 
+___ext-loginWindow.xml___
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
@@ -70,7 +71,7 @@ Here is an example of implementation of the whole controller:
     </layout>
 </window>
 ```
-
+___ExtAppLoginWindow.java___
 ```java
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
@@ -213,7 +214,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
     }
 }
 ```
-
+___messages.properties___
 ```
 captions.loginBy = Login by
 errors.message.samlLoginFailed = User '%s' hasn't been logged by SAML.
