@@ -31,47 +31,7 @@ maven {
 
 ## Minimal configuration
 
-Before you start using the component, you need to make some settings.
-
-### Service Provider Id
-
-Set an id for the CUBA.platform application. This id must be unique within the Identity Provider. This id is specified in web-app.properties:
-
-```
-cuba.addon.saml.spId = cuba-saml-demo
-```
-
-### IDP Metadata
-
-IDP provider metadata is generally supplied as an XML file and available on some IDP url. You must specify this URL in web-app.properties:
-
-```
-cuba.addon.saml.idp.metadataUrl = http://idp.ssocircle.com/idp-meta.xml
-```
-
-### Keystore
-
-Each Service Provider must have a unique secret/public connection key. To generate the corresponding pair, you can use the following instruction:
-
-- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys
-- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys
-
-Then you need to specify the Keystore's parameters in the web-app.properties:
-
-```
-cuba.addon.saml.keystore.path = classpath: com / company / samladdonreferenceproject / keys / samlKeystore.jks
-cuba.addon.saml.keystore.login = apollo
-cuba.addon.saml.keystore.password = nalle123
-```
-
-For a detailed parameters description, see Appendix A.
-
-### Generating the Service Provider Metadata
-
-To register the Service Provider in the IDP server you must provide an XML description for the first. To do this you can use the SAML Add-on administrating screen.
-
-Open the menu item `Administration` -> `SAML` ->` SP Metadata` in running CUBA.platform application with the connected add-on. This screen generates the Service Provider ID and the XML Description for the Service Provider to be provided to IDP.
-
+Before you start using the component with static IDP, you need to make some settings.
 
 ### Extension of the standard login window in the CUBA.platform application
 
@@ -82,48 +42,68 @@ Then add a button to log in via the IDP SAML server. By pressing this button the
 Here is an example of implementation of the whole controller:
 
 ```java
-package com.company.samladdonreferenceproject.web.login;
-
+import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
-import com.haulmont.addon.saml.service.SamlRegistrationService;
+import com.haulmont.addon.saml.service.SamlService;
 import com.haulmont.addon.saml.web.security.saml.SamlSessionPrincipal;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.UIAccessor;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
-import com.haulmont.cuba.web.controllers.ControllerUtils;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.security.ExternalUserCredentials;
 import com.vaadin.server.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URI;
 import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
-
+/**
+ * @author kuchmin
+ */
 public class ExtAppLoginWindow extends AppLoginWindow {
 
-    protected final Logger log = LoggerFactory.getLogger (ExtAppLoginWindow.class);
+    private static final Logger log = LoggerFactory.getLogger(ExtAppLoginWindow.class);
 
     @Inject
-    protected SamlRegistrationService samlRegistrationService;
-
-    protected RequestHandler samlCallbackRequestHandler =
-            this :: handleSamlCallBackRequest;
-
+    protected SamlService samlService;
+    @Inject
+    protected TrustedClientService trustedClientService;
+    @Inject
+    protected DataManager dataManager;
     @Inject
     protected BackgroundWorker backgroundWorker;
 
     @Inject
-    private SamlConfig samlConfig;
+    protected SamlConfig samlConfig;
+    @Inject
+    protected WebAuthConfig webAuthConfig;
 
-    protected URI redirectUri;
+    @Inject
+    protected Label ssoLookupFieldLabel;
+    @Inject
+    protected LookupField ssoLookupField;
+
+    protected RequestHandler samlCallbackRequestHandler = this::handleSamlCallBackRequest;
 
     protected UIAccessor uiAccessor;
 
@@ -131,70 +111,147 @@ public class ExtAppLoginWindow extends AppLoginWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        this.uiAccessor = backgroundWorker.getUIAccessor();
+        uiAccessor = backgroundWorker.getUIAccessor();
+
+        ssoLookupField.setOptionsList(getActiveConnections());
+        ssoLookupFieldLabel.setVisible(!CollectionUtils.isEmpty(ssoLookupField.getOptionsList()));
+        ssoLookupField.setVisible(!CollectionUtils.isEmpty(ssoLookupField.getOptionsList()));
+        ssoLookupField.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                SamlConnection connection = (SamlConnection) e.getValue();
+                VaadinSession.getCurrent().getSession().setAttribute(SamlSessionPrincipal.SAML_CONNECTION_CODE, connection.getCode());
+                Page.getCurrent().setLocation(samlConfig.getSamlLoginUrl());
+            }
+            ssoLookupField.setValue(null);
+        });
     }
 
-    public void loginSsoCircle() {
+    @Override
+    public void ready() {
+        super.ready();
+
         VaadinSession.getCurrent().addRequestHandler(samlCallbackRequestHandler);
-
-        this.redirectUri = Page.getCurrent().getLocation();
-
-        Page.getCurrent().setLocation(samlConfig.getSamlLoginUrl());
+        try {
+            samlCallbackRequestHandler.handleRequest(VaadinSession.getCurrent(), null, null);
+        } catch (IOException e) {
+            log.error("Failed to check SAML login", e);
+        }
     }
 
-    public boolean handleSamlCallBackRequest(VaadinSession session, VaadinRequest request,
-                                             VaadinResponse response) throws IOException {
+    protected boolean handleSamlCallBackRequest(VaadinSession session, @Nullable VaadinRequest request,
+                                                @Nullable VaadinResponse response) throws IOException {
         Principal principal = VaadinService.getCurrentRequest().getUserPrincipal();
         if (principal instanceof SamlSessionPrincipal) {
-            SamlSession samlSession = ((SamlSessionPrincipal) principal).getSamlSession();
-
+            final SamlSession samlSession = ((SamlSessionPrincipal) principal).getSamlSession();
             uiAccessor.accessSynchronously(() -> {
                 try {
-                    User user = samlRegistrationService.findOrRegisterUser(samlSession);
-
-                    ExternalUserCredentials credentials =
-                            new ExternalUserCredentials(user.getLogin());
-
-                    app.getConnection().login(credentials);
+                    User user = samlService.getUser(samlSession);
+                    ExternalUserCredentials credentials = new ExternalUserCredentials(user.getLogin());
+                    doLogin(credentials);
                 } catch (LoginException e) {
-                    showLoginException(format("User hasn't been logged by SAML (user: %s)",
-                            samlSession.getPrincipal()));
-                } finally {
-                    session.removeRequestHandler(samlCallbackRequestHandler);
+                    log.info("Login by SAML failed", e);
+
+                    showLoginException(String.format(getMessage("errors.message.samlLoginFailed"), samlSession.getPrincipal()));
+                } catch (Exception e) {
+                    log.warn("Login by SAML failed. Internal error.", e);
+
+                    showUnhandledExceptionOnLogin(e);
                 }
             });
-
-            ((VaadinServletResponse) response).getHttpServletResponse().
-                    sendRedirect(ControllerUtils.getLocationWithoutParams(redirectUri));
-
-            return false;
         }
-
         return false;
+    }
+
+    @Override
+    protected void doLogin(Credentials credentials) throws LoginException {
+        super.doLogin(credentials);
+
+        VaadinSession.getCurrent().removeRequestHandler(samlCallbackRequestHandler);
+    }
+
+    protected List<SamlConnection> getActiveConnections() {
+        UserSession systemSession;
+        try {
+            systemSession = trustedClientService.getSystemSession(webAuthConfig.getTrustedClientPassword());
+        } catch (LoginException e) {
+            log.error("Unable to obtain system session", e);
+            return Collections.emptyList();
+        }
+        return AppContext.withSecurityContext(new SecurityContext(systemSession), () -> {
+            List<SamlConnection> items = dataManager.loadList(LoadContext.create(SamlConnection.class)
+                    .setQuery(new LoadContext.Query("select e from samladdon$SamlConnection e where e.active = true order by e.code"))
+                    .setView(View.MINIMAL));
+            return items;
+        });
     }
 }
 ```
 
 You can observe the details of the implementation in the corresponding demo project.
 
-### Conclusion
+### Keystore
+
+Each Service Provider must have a unique secret/public connection key. To generate the corresponding pair, you can use the following instruction:
+
+- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys
+- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys
+
+
+### For static IDP (to be removed) 
+
+#### Service Provider Id
+
+Set an id for the CUBA.platform application. This id must be unique within the Identity Provider. This id is specified in web-app.properties:
+
+```
+cuba.addon.saml.spId = cuba-saml-demo
+```
+
+#### IDP Metadata
+
+IDP provider metadata is generally supplied as an XML file and available on some IDP url. You must specify this URL in web-app.properties:
+
+```
+cuba.addon.saml.idp.metadataUrl = http://idp.ssocircle.com/idp-meta.xml
+```
+
+#### Keystore
+
+You need to specify the Keystore's parameters in the web-app.properties:
+
+```
+cuba.addon.saml.keystore.path = classpath: com / company / samladdonreferenceproject / keys / samlKeystore.jks
+cuba.addon.saml.keystore.login = apollo
+cuba.addon.saml.keystore.password = nalle123
+```
+
+For a detailed parameters description, see Appendix A.
+
+#### Generating the Service Provider Metadata
+
+To register the Service Provider in the IDP server you must provide an XML description for the first. To do this you can use the SAML Add-on administrating screen.
+
+Open the menu item `Administration` -> `SAML` ->` SP Metadata` in running CUBA.platform application with the connected add-on. This screen generates the Service Provider ID and the XML Description for the Service Provider to be provided to IDP.
+
+#### Conclusion
 
 After performing all the actions described above you will have the following result.
 The SAML login screen will appear on the CUBA Application login screen. When you click the button you will be redirected to the IDP authorization page. After successful logging in you will be redirected back to the SP being already logged in in the SP.
 
 ## Absent users registration
 
-By default, if there is no user in the CUBA.platform application the SP should register the new user. The SAML Add-on does not perform any actions on the user's creation. Developer of the CUBA.platform application needs to implement it manually (see the example of adding the login button via SAML to the login page). SAML-addon provides a service that simplifies the process of finding a user and registering him in case he was not found.
+By default, if there is no user in the CUBA.platform application the SP should register the new user. The SAML Add-on does not perform any actions on the user's creation. Developer of the CUBA.platform application needs to implement it manually (see the example of adding the login button via SAML to the login page). SAML-addon provides an interface that simplifies the process of finding a user and registering him in case he was not found.
 
-### SamlRegistrationService
+### SamlProcessor
 
-This service provides methods for searching and registering users in case they are absent in the system. In the default implementation when a new user is registered the following attributes will be user, if they are present in the response:
-
+By default the component provides BaseSamlProcessor which populates to the new user only several attributes from the SAML session:
 - FirstName
 - LastName
-- ParticipantName - the name that SAML IDP provides as participant's ID (in the case of https://www.ssocircle.com/en/ this is the email of the user)
+- MiddleName
+- EmailAddress
 
-In case if the developer needs to change the attributes used for user registration they can extend the service and override his methods according to the documentation of CUBA.platform.
+However, you can define your own implementation of the interface `com.haulmont.addon.saml.core.SamlProcessor` which will handle the SAML data using your own logic.
+Please keep in mind, that `getName()` method should return a value matching SAMLConnection.code of any registered SAML Connection.
 
 # Appendix A: Application Properties
 
