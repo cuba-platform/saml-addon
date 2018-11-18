@@ -2,7 +2,6 @@
 
 The purpose of the SAML Integration CUBA component is to provide a readily available instrument of authentication via a SAML Identity Provider service in any CUBA-based application.
 
-
 # Getting Started
 
 ## Installing SAML Add-on
@@ -31,13 +30,13 @@ maven {
 
 ## Minimal configuration
 
-Before you start using the component with static IDP, you need to make some settings.
+Before you start using the component with static IDP, you need to make some changes in your project.
 
 ### Extension of the standard login window in the CUBA.platform application
 
 First, you need to extend the standard Login screen. It is recommended to perform it in Cuba Studio. To do this open the project in Cuba Studio, select the tab `Generic UI` and press` New`. In the Templates list, select `Login window` and click `Create`.
 
-Then add a button to log in via the IDP SAML server. By pressing this button the loginSsoCircle() method will be called - this is the entry point.
+Then add a lookup field with list of IDP providers. When you choose one of the providers - SAML request is initiated.
 
 Here is an example of implementation of the whole controller:
 
@@ -243,50 +242,20 @@ Each Service Provider must have a unique secret/public connection key. To genera
 9. Fill the `Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
 10. Click `Active` checkbox. After that the IDP will be shown on the login screen
 
-### For static IDP (to be removed) 
-
-#### Service Provider Id
-
-Set an id for the CUBA.platform application. This id must be unique within the Identity Provider. This id is specified in web-app.properties:
+### For static IDP
+There is an option to have only one IDP provider defined statically. Below you can see the relevant settings, should be done in app.properties. They are more or less similar to setps described above. 
 
 ```
 cuba.addon.saml.spId = cuba-saml-demo
-```
-
-#### IDP Metadata
-
-IDP provider metadata is generally supplied as an XML file and available on some IDP url. You must specify this URL in web-app.properties:
-
-```
 cuba.addon.saml.idp.metadataUrl = http://idp.ssocircle.com/idp-meta.xml
-```
-
-#### Keystore
-
-You need to specify the Keystore's parameters in the web-app.properties:
-
-```
 cuba.addon.saml.keystore.path = classpath: com / company / samladdonreferenceproject / keys / samlKeystore.jks
 cuba.addon.saml.keystore.login = apollo
 cuba.addon.saml.keystore.password = nalle123
 ```
 
-For a detailed parameters description, see Appendix A.
-
-#### Generating the Service Provider Metadata
-
-To register the Service Provider in the IDP server you must provide an XML description for the first. To do this you can use the SAML Add-on administrating screen.
-
-Open the menu item `Administration` -> `SAML` ->` SP Metadata` in running CUBA.platform application with the connected add-on. This screen generates the Service Provider ID and the XML Description for the Service Provider to be provided to IDP.
-
-#### Conclusion
-
-After performing all the actions described above you will have the following result.
-The SAML login screen will appear on the CUBA Application login screen. When you click the button you will be redirected to the IDP authorization page. After successful logging in you will be redirected back to the SP being already logged in in the SP.
-
 ## Absent users registration
 
-By default, if there is no user in the CUBA.platform application the SP should register the new user. The SAML Add-on does not perform any actions on the user's creation. Developer of the CUBA.platform application needs to implement it manually (see the example of adding the login button via SAML to the login page). SAML-addon provides an interface that simplifies the process of finding a user and registering him in case he was not found.
+By default, if there is no user in the CUBA.platform application the SP should register the new user. The SAML Add-on provides only straightforward logic of the new user creation, defined in BaseSamlProcessor.
 
 ### SamlProcessor
 
