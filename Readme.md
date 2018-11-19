@@ -244,7 +244,7 @@ Each Service Provider must have a unique secret/public connection key. To genera
     Then click `Refresh` button. If the URL is correct and IDP works fine - you will see some XML content below.
 10. Click `Active` checkbox. After that the IDP will be shown on the login screen
 
-##Tenant login
+## Tenant login
 
 By default, the example shows the lookup field with list of IDP providers.
 To simplify login, you can use a specific tenant URL. When a user uses such URL, the system automatically redirects you to the specific IDP.
