@@ -12,6 +12,10 @@ To use the add-on developer needs to install it to the their local repository. I
 
 It is recommended to perform this operation in Cuba Studio. Open the project in Cuba Studio and go to editing its properties (`Project properties` ->` Edit`). Click `+` located next to the caption `Custom components`. The component should appear in the dropdown list (second field) with the name `saml-addon` (if you did install it earlier). Select the component, press `ok`, save the project settings. SAML Add-on is referenced.
 
+## Minimal configuration
+
+Before you start using the component with static IDP, you need to make some changes in your project.
+
 ### Adding Maven repos to a project
 
 The Add-on references artifacts that are not available in CUBA.platform repo. To use the Add-on you need to add the following repos to the `build.gradle` file (section `buildscript` -> `repositories`):
@@ -27,10 +31,6 @@ maven {
     url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
 }
 ```
-
-## Minimal configuration
-
-Before you start using the component with static IDP, you need to make some changes in your project.
 
 ### Extension of the standard login window in the CUBA.platform application
 
