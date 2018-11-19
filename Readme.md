@@ -234,7 +234,7 @@ Each Service Provider must have a unique secret/public connection key. To genera
 1. Navigate to `Administration` -> `SAML`
 2. Click `Create` button
 3. Fill the `Name` field - it will be shown to users on the login screen
-4. Fill the `Code` field - it will be internally
+4. Fill the `Code` field - it will be used for tenant login
 5. Upload the keystore file (generated in the previous section) and fill `Key Store Login` and `Key Store Password` fields
 6. Choose `Default access group` to be set to the new users logged with this IDP
 7. Choose `Processing service` to process the new users logged with this IDP
@@ -243,6 +243,12 @@ Each Service Provider must have a unique secret/public connection key. To genera
 9. Fill the `Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
     Then click `Refresh` button. If the URL is correct and IDP works fine - you will see some XML content below.
 10. Click `Active` checkbox. After that the IDP will be shown on the login screen
+
+##Tenant login
+
+By default, the example shows the lookup field with list of IDP providers.
+To simplify login, you can use a specific tenant URL. When a user uses such URL, the system automatically redirects you to the specific IDP.
+Example: `http://localhost:8080/app/ssocircle/`. Here `ssocircle` is the SAMLConnection.code. 
 
 ## Absent users registration
 
