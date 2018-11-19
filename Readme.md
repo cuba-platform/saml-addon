@@ -273,27 +273,6 @@ cuba.addon.saml.keystore.password = nalle123
 
 ## General Properties
 
-### cuba.addon.saml.spId
-
-* __Description:__ Sets the ServiceProvider ID, this identifier must be
-unique within the IDP
-
-* __Default value:__ *cuba-sp-identifier*
-
-* __Type:__ Used in the Web Client
-
-* __Interface:__ *SamlWebAppConfig*
-
-### cuba.addon.saml.defaultGroupId
-
-* __Description:__ The AccessGroup object identifier that is used for new user registration
-
-* __Default value:__ *0fa2b1a5-1d68-4d69-9fbd-dff348347f93 (Company)*
-
-* __Type:__ stored in the database
-
-* __Interface:__ *SamlConfig*
-
 ### cuba.addon.saml.loginUrl
 
 * __Description:__ URL for SAML login on Service Provider
@@ -324,6 +303,43 @@ unique within the IDP
 
 * __Interface:__ *SamlConfig*
 
+### cuba.addon.saml.ssoLogout
+
+* __Description:__ Defines whether the logout action will be also performed on the IDP when user performs logout in the CUBA.platform application (SP)
+
+* __Default value:__ *false*
+
+* __Type:__ stored in the database
+
+* __Interface:__ *SamlConfig*
+
+## Static IDP properties
+
+The following properties should be used if you have only one IDP, defined statically, and nothing can be changed.
+In this case you put all necessary information to app.properties.
+
+### cuba.addon.saml.spId
+
+* __Description:__ Sets the ServiceProvider ID, this identifier must be
+unique within the IDP
+
+* __Default value:__ *cuba-sp-identifier*
+
+* __Type:__ Used in the Web Client
+
+* __Interface:__ *SamlWebAppConfig*
+
+### cuba.addon.saml.defaultGroupId
+
+* __Description:__ The AccessGroup object identifier that is used for new user registration
+
+* __Default value:__ *0fa2b1a5-1d68-4d69-9fbd-dff348347f93 (Company)*
+
+* __Type:__ stored in the database
+
+* __Interface:__ *SamlConfig*
+
+
 ### cuba.addon.saml.keystore.path
 
 * __Description:__ location of the keystore file for ServiceProvider.
@@ -349,16 +365,6 @@ The file keystore can be located in the classpath, for example:
 * __Type:__ Used in the Web Client
 
 * __Interface:__ *SamlWebAppConfig*
-
-### cuba.addon.saml.ssoLogout
-
-* __Description:__ Defines whether the logout action will be also performed on the IDP when user performs logout in the CUBA.platform application (SP)
-
-* __Default value:__ *false*
-
-* __Type:__ stored in the database
-
-* __Interface:__ *SamlConfig*
 
 ### cuba.addon.saml.idp.metadataUrl
 
