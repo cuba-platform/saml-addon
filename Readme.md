@@ -240,18 +240,8 @@ Each Service Provider must have a unique secret/public connection key. To genera
 8. Fill the `Service provider identity`. This field will be used by IDP, to identify the service provider. Example: `cuba-saml-demo`
     Then click `Refresh` button. Copy the generated XML from the field below and register it in the IDP.
 9. Fill the `Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
+    Then click `Refresh` button. If the URL is correct and IDP works fine - you will see some XML content below.
 10. Click `Active` checkbox. After that the IDP will be shown on the login screen
-
-### For static IDP
-There is an option to have only one IDP provider defined statically. Below you can see the relevant settings, should be done in app.properties. They are more or less similar to setps described above. 
-
-```
-cuba.addon.saml.spId = cuba-saml-demo
-cuba.addon.saml.idp.metadataUrl = http://idp.ssocircle.com/idp-meta.xml
-cuba.addon.saml.keystore.path = classpath: com / company / samladdonreferenceproject / keys / samlKeystore.jks
-cuba.addon.saml.keystore.login = apollo
-cuba.addon.saml.keystore.password = nalle123
-```
 
 ## Absent users registration
 
@@ -266,7 +256,18 @@ By default the component provides BaseSamlProcessor which populates to the new u
 - EmailAddress
 
 However, you can define your own implementation of the interface `com.haulmont.addon.saml.core.SamlProcessor` which will handle the SAML data using your own logic.
-Please keep in mind, that `getName()` method should return a value matching SAMLConnection.code of any registered SAML Connection.
+The `getName()` method should return a user-friendly name, to show in the lookup field on the SAMLCOnnection.edit screen.
+
+### For static IDP
+There is an option to have only one IDP provider defined statically. Below you can see the relevant settings, should be done in app.properties. They are more or less similar to setps described above. 
+
+```
+cuba.addon.saml.spId = cuba-saml-demo
+cuba.addon.saml.idp.metadataUrl = http://idp.ssocircle.com/idp-meta.xml
+cuba.addon.saml.keystore.path = classpath: com / company / samladdonreferenceproject / keys / samlKeystore.jks
+cuba.addon.saml.keystore.login = apollo
+cuba.addon.saml.keystore.password = nalle123
+```
 
 # Appendix A: Application Properties
 
