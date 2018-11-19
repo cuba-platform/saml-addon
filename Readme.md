@@ -38,7 +38,8 @@ First, you need to extend the standard Login screen. It is recommended to perfor
 
 Then add a lookup field with list of IDP providers. When you choose one of the providers - SAML request is initiated.
 
-Here is an example of implementation of the whole controller:
+Here is an example of implementation of the whole controller for CUBA 6.9 
+(in CUBA 6.10 the login screen has been slightly changed, so you need to make small changes in the screen layout):
 
 ___ext-loginWindow.xml___
 ```xml
