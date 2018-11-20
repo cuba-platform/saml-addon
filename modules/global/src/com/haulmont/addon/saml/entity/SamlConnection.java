@@ -64,9 +64,14 @@ public class SamlConnection extends StandardEntity {
     @Column(name = "KEYSTORE_PASSWORD")
     private String keystorePassword;
 
-    @NotNull
-    @Column(name = "IDP_METADATA_URL", nullable = false)
+    @Column(name = "IDP_METADATA_URL")
     private String idpMetadataUrl;
+
+    @Composition
+    @OnDelete(DeletePolicy.CASCADE)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "IDP_METADATA_ID")
+    private FileDescriptor idpMetadata;
 
     @NotNull
     @OnDeleteInverse(DeletePolicy.DENY)
@@ -141,6 +146,14 @@ public class SamlConnection extends StandardEntity {
 
     public void setIdpMetadataUrl(String idpMetadataUrl) {
         this.idpMetadataUrl = idpMetadataUrl;
+    }
+
+    public FileDescriptor getIdpMetadata() {
+        return idpMetadata;
+    }
+
+    public void setIdpMetadata(FileDescriptor idpMetadata) {
+        this.idpMetadata = idpMetadata;
     }
 
     public Group getDefaultGroup() {

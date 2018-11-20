@@ -5,6 +5,7 @@
           extends="_local"
           name="connection.browse">
         <property name="defaultGroup" view="_minimal"/>
+        <property name="idpMetadata" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.addon.saml.entity.SamlConnection"
@@ -12,6 +13,7 @@
           name="connection.edit">
         <property name="keystore" view="_minimal"/>
         <property name="defaultGroup" view="_minimal"/>
+        <property name="idpMetadata" view="_minimal"/>
     </view>
 
     <view class="com.haulmont.addon.saml.entity.SamlConnection"
@@ -24,5 +26,6 @@
           extends="_local"
           name="connection.activation">
         <property name="keystore" view="_minimal"/>
+        <property name="idpMetadata" view="_minimal"/>
     </view>
 </views>

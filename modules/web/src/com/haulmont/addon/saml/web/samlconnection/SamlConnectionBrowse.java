@@ -18,6 +18,7 @@ package com.haulmont.addon.saml.web.samlconnection;
 
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.web.security.saml.SamlCommunicationService;
+import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -50,6 +51,7 @@ public class SamlConnectionBrowse extends AbstractLookup {
         super.init(params);
 
         initActions();
+        initTableColumns();
     }
 
     protected void initActions() {
@@ -132,5 +134,9 @@ public class SamlConnectionBrowse extends AbstractLookup {
             return true;
         }
         return false;
+    }
+
+    protected void initTableColumns() {
+        FileDownloadHelper.initGeneratedColumn(samlConnectionsTable, "idpMetadata");
     }
 }

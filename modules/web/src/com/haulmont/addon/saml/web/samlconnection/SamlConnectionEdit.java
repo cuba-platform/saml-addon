@@ -18,20 +18,27 @@ package com.haulmont.addon.saml.web.samlconnection;
 
 import com.haulmont.addon.saml.service.SamlService;
 import com.haulmont.addon.saml.web.security.saml.SamlCommunicationService;
+import com.haulmont.cuba.core.app.FileStorageService;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.addon.saml.entity.SamlConnection;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -48,6 +55,11 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     protected DataManager dataManager;
     @Inject
     protected BackgroundWorker backgroundWorker;
+    @Inject
+    protected FileStorageService fileStorageService;
+
+    @Inject
+    protected Datasource<SamlConnection> samlConnectionDs;
 
     @Inject
     protected SourceCodeEditor idpMetadataView;
@@ -67,6 +79,10 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     protected FieldGroup fieldGroup;
     @Inject
     protected LookupField processingServiceField;
+    @Inject
+    protected TextField idpMetadataUrlField;
+    @Inject
+    protected UploadField idpMetadataUploadField;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -127,6 +143,7 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
             @Override
             public void actionPerform(Component component) {
                 loadingIdpMetadataBar.setVisible(true);
+                idpMetadataUrlField.setEnabled(false);
                 idpMetadataRefreshBtn.setEnabled(false);
 
                 final SamlConnection item = getItem();
@@ -147,6 +164,7 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
                     @Override
                     public void done(MetadataResult result) {
                         loadingIdpMetadataBar.setVisible(false);
+                        idpMetadataUrlField.setEnabled(true);
                         idpMetadataRefreshBtn.setEnabled(true);
                         setIdpMetadata(result);
                     }
@@ -154,6 +172,24 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
                 backgroundWorker.handle(task).execute();
             }
         });
+
+        samlConnectionDs.addItemPropertyChangeListener(e -> {
+            if ("idpMetadataUrl".equals(e.getProperty()) || "idpMetadata".equals(e.getProperty())) {
+                setupIdpMetadataView();
+            }
+        });
+
+        Set<String> extensions = getIdpFilePermittedExtensions();
+        if (!CollectionUtils.isEmpty(extensions)) {
+            idpMetadataUploadField.setPermittedExtensions(extensions);
+        }
+    }
+
+    protected Set<String> getIdpFilePermittedExtensions() {
+        Set<String> extensions = new HashSet<>();
+        extensions.add(".xml");
+        extensions.add(".txt");
+        return extensions;
     }
 
     protected void setIdpMetadata(MetadataResult result) {
@@ -177,6 +213,47 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     }
 
     @Override
+    protected void postInit() {
+        super.postInit();
+
+        setupIdpMetadataView();
+    }
+
+    protected void setupIdpMetadataView() {
+        String url = getItem().getIdpMetadataUrl();
+        FileDescriptor fd = getItem().getIdpMetadata();
+
+        String idpMetadataValue = null;
+        if (!StringUtils.isEmpty(url)) {
+            idpMetadataRefreshBtn.setEnabled(true);
+            idpMetadataUrlField.setEditable(true);
+            idpMetadataUploadField.setEnabled(false);
+
+            getItem().setIdpMetadata(null);
+        } else if (fd != null) {
+            idpMetadataRefreshBtn.setEnabled(false);
+            idpMetadataUrlField.setEditable(false);
+            idpMetadataUploadField.setEnabled(true);
+
+            getItem().setIdpMetadataUrl(null);
+
+            try {
+                idpMetadataValue = new String(fileStorageService.loadFile(fd), StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                log.error("Failed to read file", e);
+
+                showNotification(String.format(getMessage("errors.fileReadFailed"), e.getMessage()), NotificationType.ERROR);
+            }
+        } else {
+            idpMetadataRefreshBtn.setEnabled(true);
+            idpMetadataUrlField.setEditable(true);
+            idpMetadataUploadField.setEnabled(true);
+        }
+
+        idpMetadataView.setValue(idpMetadataValue);
+    }
+
+    @Override
     protected boolean preCommit() {
         if (super.preCommit()) {
             SamlConnection connection = getItem();
@@ -184,6 +261,11 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
             if (!isCorrectCode(connection)) {
                 fieldGroup.getFieldNN("code").getComponentNN().requestFocus();
                 showNotification(getMessage("errors.incorrectCode"), NotificationType.WARNING);
+                return false;
+            }
+            if (!isIdpMetadataSpecified(connection)) {
+                idpMetadataUploadField.requestFocus();
+                showNotification(getMessage("errors.emptyIdpMetadata"), NotificationType.WARNING);
                 return false;
             }
             if (!isUnique(connection)) {
@@ -206,6 +288,10 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
             return false;
         }
         return true;
+    }
+
+    protected boolean isIdpMetadataSpecified(SamlConnection connection) {
+        return !StringUtils.isEmpty(connection.getIdpMetadataUrl()) || connection.getIdpMetadata() != null;
     }
 
     protected boolean isUnique(SamlConnection connection) {

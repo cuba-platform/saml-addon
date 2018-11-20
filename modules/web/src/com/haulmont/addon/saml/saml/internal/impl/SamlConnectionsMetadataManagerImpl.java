@@ -22,6 +22,13 @@ import com.haulmont.addon.saml.saml.internal.SamlConnectionsKeyManager;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsMetadataManager;
 import com.haulmont.addon.saml.web.security.saml.SamlCommunicationServiceBean;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.app.FileStorageService;
+import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.FileStorageException;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.internal.oxm.ByteArraySource;
 import org.opensaml.common.xml.SAMLConstants;
@@ -29,9 +36,7 @@ import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml2.metadata.RoleDescriptor;
 import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import org.opensaml.saml2.metadata.provider.*;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.opensaml.xml.security.CriteriaSet;
@@ -184,8 +189,24 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
     }
 
     protected SamlConnectionMetadataProvider generateIdpProvider(SamlConnection connection) throws MetadataProviderException {
-        HTTPMetadataProvider provider = new HTTPMetadataProvider(connection.getIdpMetadataUrl(), 15000);
-        provider.setParserPool(parserPool);
+        MetadataProvider provider;
+        if (!StringUtils.isEmpty(connection.getIdpMetadataUrl())) {
+            HttpClientParams clientParams = new HttpClientParams();
+            clientParams.setSoTimeout(15000);
+            HttpClient httpClient = new HttpClient(clientParams);
+
+            HTTPMetadataProvider httpProvider = new HTTPMetadataProvider(null, httpClient, connection.getIdpMetadataUrl());
+            httpProvider.setParserPool(parserPool);
+
+            provider = httpProvider;
+        } else if (connection.getIdpMetadata() != null) {
+            FileStorageMetadataProvider fileStorageProvider = new FileStorageMetadataProvider(connection.getIdpMetadata());
+            fileStorageProvider.setParserPool(parserPool);
+
+            provider = fileStorageProvider;
+        } else {
+            throw new DevelopmentException(String.format("IDP metadata not specified in SAML connection %s", connection.getName()));
+        }
         // provider.initialize();
         return new SamlConnectionExtendedMetadataDelegate(provider, connection.getCode(), false);
     }
@@ -382,5 +403,31 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
             km = connectionsKeyManager.getKeyManager(((SamlConnectionMetadataProvider) provider).getConnectionCode());
         }
         return km;
+    }
+
+    protected static class FileStorageMetadataProvider extends AbstractReloadingMetadataProvider {
+        protected FileDescriptor fd;
+
+        protected FileStorageMetadataProvider(FileDescriptor metadataFileDescriptor) {
+            fd = metadataFileDescriptor;
+        }
+
+        @Override
+        protected String getMetadataIdentifier() {
+            return fd.getName();
+        }
+
+        @Override
+        protected byte[] fetchMetadata() throws MetadataProviderException {
+            try {
+                return getFileStorageService().loadFile(fd);
+            } catch (FileStorageException e) {
+                throw new MetadataProviderException(e);
+            }
+        }
+
+        protected FileStorageService getFileStorageService() {
+            return AppBeans.get(FileStorageService.NAME);
+        }
     }
 }
