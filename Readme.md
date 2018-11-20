@@ -14,7 +14,7 @@ It is recommended to perform this operation in Cuba Studio. Open the project in 
 
 ## Minimal configuration
 
-Before you start using the component with static IDP, you need to make some changes in your project.
+Before you start using the component in your project, you need to make some changes in your project.
 
 ### Adding Maven repos to a project
 
