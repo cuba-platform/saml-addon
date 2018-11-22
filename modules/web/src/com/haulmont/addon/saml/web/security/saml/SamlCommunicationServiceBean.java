@@ -19,6 +19,7 @@ package com.haulmont.addon.saml.web.security.saml;
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsKeyManager;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsMetadataManager;
+import com.haulmont.addon.saml.security.config.SamlConfig;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -60,6 +61,8 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
     protected WebAuthConfig webAuthConfig;
     @Inject
     protected GlobalConfig globalConfig;
+    @Inject
+    protected SamlConfig samlConfig;
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     protected Map<UUID, String> cache = new HashMap<>();
@@ -89,7 +92,11 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
     }
 
     public String getWebAppUrl() {
-        return globalConfig.getWebAppUrl();
+        String appUrl = samlConfig.getWebAppUrl();
+        if (StringUtils.isEmpty(appUrl)) {
+            appUrl = globalConfig.getWebAppUrl();
+        }
+        return appUrl;
     }
 
     protected void init() {

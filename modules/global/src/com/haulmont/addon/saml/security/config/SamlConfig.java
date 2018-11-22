@@ -44,4 +44,10 @@ public interface SamlConfig extends Config {
     @Property("cuba.addon.saml.metadataUrl")
     @DefaultString("http://localhost:8080/app/saml/metadata")
     String getSamlMetadataUrl();
+
+    /**
+     * @return external access web app address. Can be different between cuba.webAppUrl
+     */
+    @Property("cuba.addon.saml.webAppUrl")
+    String getWebAppUrl();
 }
