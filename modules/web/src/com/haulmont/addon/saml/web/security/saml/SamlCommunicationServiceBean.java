@@ -108,18 +108,32 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
         if (samlConfig.getProxyIncludePort()) {
             sb.append(":").append(samlConfig.getProxyServerPort());
         }
-        sb.append(samlConfig.getProxyContextPath());
+        String contextPath = samlConfig.getProxyContextPath();
+        if (!"/".equals(contextPath)) {
+            if (!contextPath.startsWith("/")) {
+                contextPath = "/" + contextPath;
+            }
+            sb.append(contextPath);
+        }
         return sb.toString();
     }
 
     public SamlProxyServerConfiguration getProxyConfiguration() {
+        String contextPath = samlConfig.getProxyContextPath();
+        if (!"/".equals(contextPath)) {
+            if (!contextPath.startsWith("/")) {
+                contextPath = "/" + contextPath;
+            }
+        } else {
+            contextPath = StringUtils.EMPTY;
+        }
         return new SamlProxyServerConfiguration(
                 getProxyServerUrl(),
                 samlConfig.getProxyScheme(),
                 samlConfig.getProxyServerName(),
                 samlConfig.getProxyServerPort(),
                 samlConfig.getProxyIncludePort(),
-                samlConfig.getProxyContextPath()
+                contextPath
         );
     }
 

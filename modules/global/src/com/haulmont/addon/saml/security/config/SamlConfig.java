@@ -68,6 +68,6 @@ public interface SamlConfig extends Config {
     Boolean getProxyIncludePort();
 
     @Property("cuba.addon.saml.proxy.contextPath")
-    @Default("/app")
+    @Default("/")
     String getProxyContextPath();
 }
