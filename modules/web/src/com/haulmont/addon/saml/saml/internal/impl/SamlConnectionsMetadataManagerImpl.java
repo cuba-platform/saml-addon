@@ -173,7 +173,7 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
     protected SamlConnectionMetadataProvider generateSpProvider(SamlConnection connection, KeyManager keyManager) throws MetadataProviderException {
         MetadataGenerator generator = new MetadataGenerator();
         generator.setEntityId(connection.getSpId());
-        generator.setEntityBaseURL(samlCommunicationService.getWebAppUrl());
+        generator.setEntityBaseURL(samlCommunicationService.getEntityBaseUrl());
         generator.setSamlWebSSOFilter(samlWebSSOFilter);
         generator.setSamlWebSSOHoKFilter(samlWebSSOHoKFilter);
         generator.setSamlLogoutProcessingFilter(samlLogoutProcessingFilter);

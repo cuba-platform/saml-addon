@@ -19,6 +19,8 @@ package com.haulmont.addon.saml.saml.internal.impl;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionMessageContext;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsKeyManager;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsMetadataManager;
+import com.haulmont.addon.saml.saml.internal.SamlProxyServerConfiguration;
+import com.haulmont.addon.saml.web.security.saml.SamlCommunicationServiceBean;
 import com.haulmont.addon.saml.web.security.saml.SamlSessionPrincipal;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.encryption.Decrypter;
@@ -61,6 +63,7 @@ import org.springframework.util.StringUtils;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 
@@ -85,6 +88,8 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
     protected SamlConnectionsMetadataManager connectionsMetadataManager;
     @Inject
     protected SamlConnectionsKeyManager connectionsKeyManager;
+    @Inject
+    protected SamlCommunicationServiceBean samlCommunicationServiceBean;
 
     /**
      * Creates a SAMLContext with local entity values filled. Also request and response must be stored in the context
@@ -151,6 +156,14 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
             }
             ((SamlConnectionMessageContext) context).setConnectionCode(code);
         }
+    }
+
+    @Override
+    protected void populateGenericContext(HttpServletRequest request, HttpServletResponse response, SAMLMessageContext context) throws MetadataProviderException {
+        if (samlCommunicationServiceBean.isProxyEnabled()) {
+            request = new ProxyRequestWrapper(request, samlCommunicationServiceBean.getProxyConfiguration());
+        }
+        super.populateGenericContext(request, response, context);
     }
 
     /**
@@ -366,6 +379,64 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
 
         if (pkixTrustEvaluator == null) {
             pkixTrustEvaluator = new CertPathPKIXTrustEvaluator();
+        }
+    }
+
+    protected class ProxyRequestWrapper extends HttpServletRequestWrapper {
+
+        protected SamlProxyServerConfiguration proxyConfig;
+
+        protected ProxyRequestWrapper(HttpServletRequest request, SamlProxyServerConfiguration proxyConfig) {
+            super(request);
+
+            this.proxyConfig = proxyConfig;
+        }
+
+        @Override
+        public String getContextPath() {
+            return proxyConfig.getContextPath();
+        }
+
+        @Override
+        public String getScheme() {
+            return proxyConfig.getScheme();
+        }
+
+        @Override
+        public String getServerName() {
+            return proxyConfig.getServerName();
+        }
+
+        @Override
+        public int getServerPort() {
+            return proxyConfig.getServerPort();
+        }
+
+        @Override
+        public String getRequestURI() {
+            return getContextPath() + getServletPath();
+        }
+
+        @Override
+        public StringBuffer getRequestURL() {
+            StringBuffer sb = new StringBuffer();
+
+            sb.append(getScheme()).append("://").append(getServerName());
+            if (proxyConfig.isIncludePortInUrl()) {
+                sb.append(":").append(getServerPort());
+            }
+            sb.append(getContextPath());
+            sb.append(getServletPath());
+            if (getPathInfo() != null) {
+                sb.append(getPathInfo());
+            }
+
+            return sb;
+        }
+
+        @Override
+        public boolean isSecure() {
+            return "https".equalsIgnoreCase(getScheme());
         }
     }
 }

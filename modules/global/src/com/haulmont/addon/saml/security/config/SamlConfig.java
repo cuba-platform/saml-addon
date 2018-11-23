@@ -20,13 +20,15 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
  * @author kuchmin
  */
-@Source(type = SourceType.DATABASE)
+@Source(type = SourceType.APP)
 public interface SamlConfig extends Config {
 
     @Property("cuba.addon.saml.ssoLogout")
@@ -45,9 +47,27 @@ public interface SamlConfig extends Config {
     @DefaultString("http://localhost:8080/app/saml/metadata")
     String getSamlMetadataUrl();
 
-    /**
-     * @return external access web app address. Can be different between cuba.webAppUrl
-     */
-    @Property("cuba.addon.saml.webAppUrl")
-    String getWebAppUrl();
+    @Property("cuba.addon.saml.proxy.enabled")
+    @DefaultBoolean(false)
+    Boolean getProxyEnabled();
+
+    @Property("cuba.addon.saml.proxy.scheme")
+    @Default("http")
+    String getProxyScheme();
+
+    @Property("cuba.addon.saml.proxy.serverName")
+    @Default("localhost")
+    String getProxyServerName();
+
+    @Property("cuba.addon.saml.proxy.serverPort")
+    @DefaultInteger(80)
+    Integer getProxyServerPort();
+
+    @Property("cuba.addon.saml.proxy.includePort")
+    @DefaultBoolean(false)
+    Boolean getProxyIncludePort();
+
+    @Property("cuba.addon.saml.proxy.contextPath")
+    @Default("/app")
+    String getProxyContextPath();
 }

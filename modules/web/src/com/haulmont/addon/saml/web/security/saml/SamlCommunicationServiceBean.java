@@ -19,6 +19,7 @@ package com.haulmont.addon.saml.web.security.saml;
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsKeyManager;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsMetadataManager;
+import com.haulmont.addon.saml.saml.internal.SamlProxyServerConfiguration;
 import com.haulmont.addon.saml.security.config.SamlConfig;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
@@ -91,12 +92,35 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
         return webAuthConfig.getTrustedClientPassword();
     }
 
-    public String getWebAppUrl() {
-        String appUrl = samlConfig.getWebAppUrl();
-        if (StringUtils.isEmpty(appUrl)) {
-            appUrl = globalConfig.getWebAppUrl();
+    public String getEntityBaseUrl() {
+        return isProxyEnabled() ? getProxyServerUrl() : globalConfig.getWebAppUrl();
+    }
+
+    public boolean isProxyEnabled() {
+        return samlConfig.getProxyEnabled();
+    }
+
+    protected String getProxyServerUrl() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(samlConfig.getProxyScheme());
+        sb.append("://");
+        sb.append(samlConfig.getProxyServerName());
+        if (samlConfig.getProxyIncludePort()) {
+            sb.append(":").append(samlConfig.getProxyServerPort());
         }
-        return appUrl;
+        sb.append(samlConfig.getProxyContextPath());
+        return sb.toString();
+    }
+
+    public SamlProxyServerConfiguration getProxyConfiguration() {
+        return new SamlProxyServerConfiguration(
+                getProxyServerUrl(),
+                samlConfig.getProxyScheme(),
+                samlConfig.getProxyServerName(),
+                samlConfig.getProxyServerPort(),
+                samlConfig.getProxyIncludePort(),
+                samlConfig.getProxyContextPath()
+        );
     }
 
     protected void init() {
