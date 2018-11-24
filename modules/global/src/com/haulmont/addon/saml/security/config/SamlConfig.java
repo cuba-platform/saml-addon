@@ -22,8 +22,6 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
-import com.haulmont.cuba.core.config.defaults.DefaultInteger;
-import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
  * @author kuchmin
@@ -31,43 +29,48 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 @Source(type = SourceType.APP)
 public interface SamlConfig extends Config {
 
+    /**
+     * @return SAML servlet context path, e.g. "/saml".
+     */
+    @Property("cuba.addon.saml.basePath")
+    String getSamlBasePath();
+
+    /**
+     * @return SAML login path part, e.g. "/login" and with the base path the result will be "/saml/logout".
+     */
+    @Property("cuba.addon.saml.loginPath")
+    String getSamlLoginPath();
+
+    /**
+     * @return SAML logout path part, e.g. "/logout" and with the base path the result will be "/saml/logout".
+     */
+    @Property("cuba.addon.saml.logoutPath")
+    String getSamlLogoutPath();
+
+    /**
+     * @return SAML metadata display path part, e.g. "/metadata", and with the base path the result will be "/saml/metadata?tenant=tenant_code".
+     */
+    @Property("cuba.addon.saml.metadataPath")
+    String getSamlMetadataPath();
+
+    /**
+     * @return defines whether the logout action will be also performed on the IDP when user performs logout in application.
+     */
     @Property("cuba.addon.saml.ssoLogout")
     @DefaultBoolean(false)
     Boolean getSsoLogout();
 
-    @Property("cuba.addon.saml.loginUrl")
-    @DefaultString("http://localhost:8080/app/saml/login")
-    String getSamlLoginUrl();
-
-    @Property("cuba.addon.saml.logoutUrl")
-    @DefaultString("http://localhost:8080/app/saml/logout")
-    String getSamlLogoutUrl();
-
-    @Property("cuba.addon.saml.metadataUrl")
-    @DefaultString("http://localhost:8080/app/saml/metadata")
-    String getSamlMetadataUrl();
-
+    /**
+     * @return defines is a application use a proxy server or not.
+     */
     @Property("cuba.addon.saml.proxy.enabled")
     @DefaultBoolean(false)
     Boolean getProxyEnabled();
 
-    @Property("cuba.addon.saml.proxy.scheme")
-    @Default("http")
-    String getProxyScheme();
-
-    @Property("cuba.addon.saml.proxy.serverName")
-    @Default("localhost")
-    String getProxyServerName();
-
-    @Property("cuba.addon.saml.proxy.serverPort")
-    @DefaultInteger(80)
-    Integer getProxyServerPort();
-
-    @Property("cuba.addon.saml.proxy.includePort")
-    @DefaultBoolean(false)
-    Boolean getProxyIncludePort();
-
-    @Property("cuba.addon.saml.proxy.contextPath")
-    @Default("/")
-    String getProxyContextPath();
+    /**
+     * @return defines the address of remote proxy server if a proxy server is using, e.g. "https://myhost.com".
+     */
+    @Property("cuba.addon.saml.proxy.serverUrl")
+    @Default("")
+    String getProxyServerUrl();
 }

@@ -148,7 +148,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
             if (e.getValue() != null) {
                 SamlConnection connection = (SamlConnection) e.getValue();
                 VaadinSession.getCurrent().getSession().setAttribute(SamlSessionPrincipal.SAML_CONNECTION_CODE, connection.getCode());
-                Page.getCurrent().setLocation(samlConfig.getSamlLoginUrl());
+                Page.getCurrent().setLocation(getLoginUrl());
             }
             ssoLookupField.setValue(null);
         });
@@ -212,12 +212,29 @@ public class ExtAppLoginWindow extends AppLoginWindow {
             return items;
         });
     }
+
+    protected String getLoginUrl() {
+        return (samlConfig.getProxyEnabled() ? samlConfig.getProxyServerUrl() : globalConfig.getWebAppUrl())
+                 + samlConfig.getSamlBasePath() + samlConfig.getSamlLoginPath();
+    }
 }
 ```
 ___messages.properties___
 ```
 captions.loginBy = Login by
 errors.message.samlLoginFailed = User '%s' hasn't been logged by SAML.
+```
+```
+___web-app.properties___
+```
+###############################################################################
+#                                  SAML Configuration                         #
+###############################################################################
+
+cuba.addon.saml.basePath = /saml
+cuba.addon.saml.logoutPath = /logout
+cuba.addon.saml.loginPath = /login
+cuba.addon.saml.metadataPath = /metadata
 ```
 
 You can observe the details of the implementation in the corresponding demo project.
@@ -242,6 +259,7 @@ Each Service Provider must have a unique secret/public connection key. To genera
     Then click `Refresh` button. Copy the generated XML from the field below and register it in the IDP.
 9. Fill the `Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
     Then click `Refresh` button. If the URL is correct and IDP works fine - you will see some XML content below.
+    Another way to specify IDP metadata is to upload a xml file directly to application by drop it to IDP metadata text area.
 10. Click `Active` checkbox. After that the IDP will be shown on the login screen
 
 ## Tenant login
@@ -265,50 +283,42 @@ By default the component provides BaseSamlProcessor which populates to the new u
 However, you can define your own implementation of the interface `com.haulmont.addon.saml.core.SamlProcessor` which will handle the SAML data using your own logic.
 The `getName()` method should return a user-friendly name, to show in the lookup field on the SAMLCOnnection.edit screen.
 
-### For static IDP
-There is an option to have only one IDP provider defined statically. Below you can see the relevant settings, should be done in app.properties. They are more or less similar to setps described above. 
-
-```
-cuba.addon.saml.spId = cuba-saml-demo
-cuba.addon.saml.idp.metadataUrl = http://idp.ssocircle.com/idp-meta.xml
-cuba.addon.saml.keystore.path = classpath: com / company / samladdonreferenceproject / keys / samlKeystore.jks
-cuba.addon.saml.keystore.login = apollo
-cuba.addon.saml.keystore.password = nalle123
-```
-
 # Appendix A: Application Properties
 
 ## General Properties
 
-### cuba.addon.saml.loginUrl
+### cuba.addon.saml.basePath
 
-* __Description:__ URL for SAML login on Service Provider
+* __Description:__ URL SAML context path, e.g. "/saml"
 
-* __Default value:__ *http://localhost:8080/app/saml/login*
-
-* __Type:__ stored in the database
+* __Type:__ used in the Web Client
 
 * __Interface:__ *SamlConfig*
 
-### cuba.addon.saml.logoutUrl
+### cuba.addon.saml.loginPath
 
-* __Description:__ URL for SAML logout on the Service Provider
+* __Description:__ SAML login path part, e.g. "/login", and with the base path the result will be "/saml/logout".
 
-* __Default value:__ *http://localhost:8080/app/saml/logout*
-
-* __Type:__ stored in the database
+* __Type:__ used in the Web Client
 
 * __Interface:__ *SamlConfig*
 
-### cuba.addon.saml.metadataUrl
+### cuba.addon.saml.logoutPath
 
-* __Description:__ Service Provider SAML metadata URL
+* __Description:__ SAML logout path part, e.g. "/logout" and with the base path the result will be "/saml/logout".
 
-* __Default value:__ *http://localhost:8080/app/saml/metadata*
-
-* __Type:__ stored in the database
+* __Type:__ used in the Web Client
 
 * __Interface:__ *SamlConfig*
+
+### cuba.addon.saml.metadataPath
+
+* __Description:__ SAML metadata display path part, e.g. "/metadata" and with the base path the result will be "/saml/metadata?tenant=code" where code is SAMLConnection.code.
+
+* __Type:__ used in the Web Client
+
+* __Interface:__ *SamlConfig*
+
 
 ### cuba.addon.saml.ssoLogout
 
@@ -316,67 +326,28 @@ cuba.addon.saml.keystore.password = nalle123
 
 * __Default value:__ *false*
 
-* __Type:__ stored in the database
-
-* __Interface:__ *SamlConfig*
-
-## Static IDP properties
-
-The following properties should be used if you have only one IDP, defined statically, and nothing can be changed.
-In this case you put all necessary information to app.properties.
-
-### cuba.addon.saml.spId
-
-* __Description:__ Sets the ServiceProvider ID, this identifier must be
-unique within the IDP
-
-* __Default value:__ *cuba-sp-identifier*
-
-* __Type:__ Used in the Web Client
-
-* __Interface:__ *SamlWebAppConfig*
-
-### cuba.addon.saml.defaultGroupId
-
-* __Description:__ The AccessGroup object identifier that is used for new user registration
-
-* __Default value:__ *0fa2b1a5-1d68-4d69-9fbd-dff348347f93 (Company)*
-
-* __Type:__ stored in the database
+* __Type:__ used in the Web Client
 
 * __Interface:__ *SamlConfig*
 
 
-### cuba.addon.saml.keystore.path
+### cuba.addon.saml.proxy.enabled
 
-* __Description:__ location of the keystore file for ServiceProvider.
-The file keystore can be located in the classpath, for example:
-`classpath: com / company / samladdonreferenceproject / keys / samlKeystore.jks`
+* __Description:__ Defines is a application use a proxy server or not.
 
-* __Type:__ Used in the Web Client
+* __Default value:__ *false*
 
-* __Interface:__ *SamlWebAppConfig*
+* __Type:__ used in the Web Client
 
-### cuba.addon.saml.keystore.login
+* __Interface:__ *SamlConfig*
 
-* __Description:__ username for the keystore
 
-* __Type:__ Used in the Web Client
+### cuba.addon.saml.proxy.serverUrl
 
-* __Interface:__ *SamlWebAppConfig*
+* __Description:__ Defines the address of remote proxy server if a proxy server is using, e.g. "https://myhost.com".
 
-### cuba.addon.saml.keystore.password
+* __Default value:__ **
 
-* __Description:__ password for the keystore
+* __Type:__ used in the Web Client
 
-* __Type:__ Used in the Web Client
-
-* __Interface:__ *SamlWebAppConfig*
-
-### cuba.addon.saml.idp.metadataUrl
-
-* __Description:__ The IDP Metadata location URL
-
-* __Type:__ Used in the Web Client
-
-* __Interface:__ *SamlWebAppConfig*
+* __Interface:__ *SamlConfig*

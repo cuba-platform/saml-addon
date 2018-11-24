@@ -19,7 +19,6 @@ package com.haulmont.addon.saml.saml.internal.impl;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionMessageContext;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsKeyManager;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsMetadataManager;
-import com.haulmont.addon.saml.saml.internal.SamlProxyServerConfiguration;
 import com.haulmont.addon.saml.web.security.saml.SamlCommunicationServiceBean;
 import com.haulmont.addon.saml.web.security.saml.SamlSessionPrincipal;
 import org.opensaml.common.xml.SAMLConstants;
@@ -66,6 +65,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
+import java.net.URL;
 
 /**
  * Extended SAML context provider which communicate with SAML connections
@@ -161,7 +161,7 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
     @Override
     protected void populateGenericContext(HttpServletRequest request, HttpServletResponse response, SAMLMessageContext context) throws MetadataProviderException {
         if (samlCommunicationServiceBean.isProxyEnabled()) {
-            request = new ProxyRequestWrapper(request, samlCommunicationServiceBean.getProxyConfiguration());
+            request = new ProxyRequestWrapper(request, samlCommunicationServiceBean.getProxyServerUrl());
         }
         super.populateGenericContext(request, response, context);
     }
@@ -384,32 +384,36 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
 
     protected class ProxyRequestWrapper extends HttpServletRequestWrapper {
 
-        protected SamlProxyServerConfiguration proxyConfig;
+        protected URL proxyUrl;
 
-        protected ProxyRequestWrapper(HttpServletRequest request, SamlProxyServerConfiguration proxyConfig) {
+        protected ProxyRequestWrapper(HttpServletRequest request, String proxyServerUrl) {
             super(request);
 
-            this.proxyConfig = proxyConfig;
+            try {
+                proxyUrl = new URL(proxyServerUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to prepare server url", e);
+            }
         }
 
         @Override
         public String getContextPath() {
-            return proxyConfig.getContextPath();
+            return proxyUrl.getPath();
         }
 
         @Override
         public String getScheme() {
-            return proxyConfig.getScheme();
+            return proxyUrl.getProtocol();
         }
 
         @Override
         public String getServerName() {
-            return proxyConfig.getServerName();
+            return proxyUrl.getHost();
         }
 
         @Override
         public int getServerPort() {
-            return proxyConfig.getServerPort();
+            return proxyUrl.getPort();
         }
 
         @Override
@@ -422,8 +426,9 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
             StringBuffer sb = new StringBuffer();
 
             sb.append(getScheme()).append("://").append(getServerName());
-            if (proxyConfig.isIncludePortInUrl()) {
-                sb.append(":").append(getServerPort());
+            int port = getServerPort();
+            if (port != -1) {
+                sb.append(":").append(port);
             }
             sb.append(getContextPath());
             sb.append(getServletPath());

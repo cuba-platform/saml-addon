@@ -26,6 +26,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.security.HttpRequestFilter;
+import com.vaadin.shared.ApplicationConstants;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,17 @@ public class SamlLoginHttpRequestFilter implements HttpRequestFilter, Ordered {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+        // send static files without authentication
+        if (StringUtils.startsWith(httpRequest.getRequestURI(), httpRequest.getContextPath() + "/VAADIN/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+        //ignore filtering for saml servlet
+        if (StringUtils.startsWith(httpRequest.getRequestURI(), httpRequest.getContextPath() + samlConfig.getSamlBasePath())) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         SamlSession samlSession = (SamlSession) httpRequest.getSession()
                 .getAttribute(SAML_SESSION_ATTRIBUTE);
         if (samlSession == null) {
@@ -80,7 +92,10 @@ public class SamlLoginHttpRequestFilter implements HttpRequestFilter, Ordered {
                 log.debug("Redirecting to SAML connection '{}' login page", code);
 
                 httpRequest.getSession().setAttribute(SamlSessionPrincipal.SAML_CONNECTION_CODE, code);
-                httpResponse.sendRedirect(samlConfig.getSamlLoginUrl());
+
+                String loginUrl = samlConfig.getProxyEnabled() ? samlConfig.getProxyServerUrl() : globalConfig.getWebAppUrl();
+                loginUrl = loginUrl + samlConfig.getSamlBasePath() + samlConfig.getSamlLoginPath();
+                httpResponse.sendRedirect(loginUrl);
                 return;
             }
 
@@ -122,30 +137,35 @@ public class SamlLoginHttpRequestFilter implements HttpRequestFilter, Ordered {
             return null;
         }
         return AppContext.withSecurityContext(new SecurityContext(systemSession), () -> {
-            samlCommunicationService.initialize();
-
-            String url = request.getRequestURL().toString();
-            if (samlConfig.getSamlLogoutUrl().equals(url) || samlConfig.getSamlLoginUrl().equals(url)) {
-                return null;
-            }
-            if (!url.startsWith(globalConfig.getWebAppUrl())) {
-                return null;
-            }
-            url = url.replaceAll(globalConfig.getWebAppUrl() + "/", StringUtils.EMPTY);
-            int index = url.indexOf("/");
-            if (index != -1) {
-                String possibleConnection = url.substring(0, index);
-                if (samlCommunicationService.isActiveConnection(possibleConnection)) {
-                    return possibleConnection;
-                }
-            }
-
+            //check from params
             String[] params = request.getParameterMap().get(SamlSessionPrincipal.SAML_CONNECTION_CODE);
             if (params != null && params.length > 0) {
                 String possibleConnection = params[0];
                 if (samlCommunicationService.isActiveConnection(possibleConnection)) {
                     return possibleConnection;
                 }
+            }
+            //check from path
+            String info = request.getPathInfo();
+            if (StringUtils.isEmpty(info) || "/".equals(info)) {
+                return null;
+            }
+            if (info.startsWith("/")) {
+                info = info.substring(1, info.length());
+            }
+            int index = info.indexOf("/");
+            if (index != -1) {
+                info = info.substring(0, index);
+            }
+            //ignore default vaadin requests
+            if (ApplicationConstants.UIDL_PATH.equals(info) ||
+                    ApplicationConstants.PUSH_PATH.equals(info) ||
+                    ApplicationConstants.HEARTBEAT_PATH.equals(info)) {
+                return null;
+            }
+            String possibleConnectionCode = info;
+            if (samlCommunicationService.isActiveConnection(possibleConnectionCode)) {
+                return possibleConnectionCode;
             }
 
             return null;

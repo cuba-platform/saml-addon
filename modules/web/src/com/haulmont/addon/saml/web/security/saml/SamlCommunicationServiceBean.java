@@ -19,7 +19,6 @@ package com.haulmont.addon.saml.web.security.saml;
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsKeyManager;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsMetadataManager;
-import com.haulmont.addon.saml.saml.internal.SamlProxyServerConfiguration;
 import com.haulmont.addon.saml.security.config.SamlConfig;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
@@ -100,41 +99,8 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
         return samlConfig.getProxyEnabled();
     }
 
-    protected String getProxyServerUrl() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(samlConfig.getProxyScheme());
-        sb.append("://");
-        sb.append(samlConfig.getProxyServerName());
-        if (samlConfig.getProxyIncludePort()) {
-            sb.append(":").append(samlConfig.getProxyServerPort());
-        }
-        String contextPath = samlConfig.getProxyContextPath();
-        if (!"/".equals(contextPath)) {
-            if (!contextPath.startsWith("/")) {
-                contextPath = "/" + contextPath;
-            }
-            sb.append(contextPath);
-        }
-        return sb.toString();
-    }
-
-    public SamlProxyServerConfiguration getProxyConfiguration() {
-        String contextPath = samlConfig.getProxyContextPath();
-        if (!"/".equals(contextPath)) {
-            if (!contextPath.startsWith("/")) {
-                contextPath = "/" + contextPath;
-            }
-        } else {
-            contextPath = StringUtils.EMPTY;
-        }
-        return new SamlProxyServerConfiguration(
-                getProxyServerUrl(),
-                samlConfig.getProxyScheme(),
-                samlConfig.getProxyServerName(),
-                samlConfig.getProxyServerPort(),
-                samlConfig.getProxyIncludePort(),
-                contextPath
-        );
+    public String getProxyServerUrl() {
+        return samlConfig.getProxyServerUrl();
     }
 
     protected void init() {

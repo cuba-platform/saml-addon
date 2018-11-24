@@ -19,6 +19,7 @@ package com.haulmont.addon.saml.web.security.saml;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.web.security.events.AppLoggedOutEvent;
 import com.haulmont.cuba.web.sys.RequestContext;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +46,8 @@ public class SamlLoginLifecycleManager {
 
     @Inject
     protected SamlConfig samlConfig;
+    @Inject
+    protected GlobalConfig globalConfig;
 
     @EventListener
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
@@ -63,16 +66,21 @@ public class SamlLoginLifecycleManager {
 
             if (event.getRedirectUrl() == null && Boolean.TRUE.equals(samlConfig.getSsoLogout())) {
                 if (StringUtils.isEmpty(connectionCode)) {
-                    log.info("SAML connection not found. Global SAML logout will be ignored.");
+                    log.info("SAML connection not found for user logout. Global SAML logout will be ignored.");
                 } else {
                     if (!samlService.isActiveConnection(connectionCode)) {
                         log.info("SAML connection was deactivated or removed. Global SAML logout will be ignored.");
                     } else {
-                        String samlLogoutUrl = samlConfig.getSamlLogoutUrl() + "?" + SAML_CONNECTION_CODE + "=" + connectionCode;
+                        String samlLogoutUrl = getLogoutUrl() + "?" + SAML_CONNECTION_CODE + "=" + connectionCode;
                         event.setRedirectUrl(samlLogoutUrl);
                     }
                 }
             }
         }
+    }
+
+    protected String getLogoutUrl() {
+        return (samlConfig.getProxyEnabled() ? samlConfig.getProxyServerUrl() : globalConfig.getWebAppUrl())
+                + samlConfig.getSamlBasePath() + samlConfig.getSamlLogoutPath();
     }
 }
