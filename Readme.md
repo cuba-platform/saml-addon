@@ -224,7 +224,7 @@ ___messages.properties___
 captions.loginBy = Login by
 errors.message.samlLoginFailed = User '%s' hasn't been logged by SAML.
 ```
-```
+
 ___web-app.properties___
 ```
 cuba.addon.saml.basePath = /saml
