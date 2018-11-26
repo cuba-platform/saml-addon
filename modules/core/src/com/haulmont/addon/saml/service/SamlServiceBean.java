@@ -26,8 +26,13 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.security.entity.User;
+import org.opensaml.Configuration;
+import org.opensaml.DefaultBootstrap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.*;
@@ -37,9 +42,21 @@ import java.util.*;
  */
 @Service(SamlService.NAME)
 public class SamlServiceBean implements SamlService {
+    private static final Logger log = LoggerFactory.getLogger(SamlServiceBean.class);
 
     @Inject
     protected Persistence persistence;
+
+    @PostConstruct
+    public void init() {
+        try {
+            if (Configuration.getMarshallerFactory().getMarshallers().size() == 0) {
+                DefaultBootstrap.bootstrap();
+            }
+        } catch (Exception e) {
+            log.error("Failed to initialize SAML context", e);
+        }
+    }
 
     @Override
     public Map<String, String> getProcessingServices() {
