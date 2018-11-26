@@ -227,10 +227,6 @@ errors.message.samlLoginFailed = User '%s' hasn't been logged by SAML.
 ```
 ___web-app.properties___
 ```
-###############################################################################
-#                                  SAML Configuration                         #
-###############################################################################
-
 cuba.addon.saml.basePath = /saml
 cuba.addon.saml.logoutPath = /logout
 cuba.addon.saml.loginPath = /login
