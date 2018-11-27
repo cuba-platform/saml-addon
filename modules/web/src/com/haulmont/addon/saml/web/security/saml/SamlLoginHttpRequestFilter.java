@@ -137,6 +137,8 @@ public class SamlLoginHttpRequestFilter implements HttpRequestFilter, Ordered {
             return null;
         }
         return AppContext.withSecurityContext(new SecurityContext(systemSession), () -> {
+            samlCommunicationService.initialize();
+
             //check from params
             String[] params = request.getParameterMap().get(SamlSessionPrincipal.SAML_CONNECTION_CODE);
             if (params != null && params.length > 0) {
