@@ -170,22 +170,25 @@ public class ExtAppLoginWindow extends AppLoginWindow {
                                                 @Nullable VaadinResponse response) throws IOException {
         Principal principal = VaadinService.getCurrentRequest().getUserPrincipal();
         if (principal instanceof SamlSessionPrincipal) {
-            final SamlSession samlSession = ((SamlSessionPrincipal) principal).getSamlSession();
-            uiAccessor.accessSynchronously(() -> {
-                try {
-                    User user = samlService.getUser(samlSession);
-                    ExternalUserCredentials credentials = new ExternalUserCredentials(user.getLogin());
-                    doLogin(credentials);
-                } catch (LoginException e) {
-                    log.info("Login by SAML failed", e);
+            SamlSessionPrincipal samlPrincipal = (SamlSessionPrincipal) principal;
+            if (samlPrincipal.isActive()) {
+                final SamlSession samlSession = samlPrincipal.getSamlSession();
+                uiAccessor.accessSynchronously(() -> {
+                    try {
+                        User user = samlService.getUser(samlSession);
+                        ExternalUserCredentials credentials = new ExternalUserCredentials(user.getLogin());
+                        doLogin(credentials);
+                    } catch (LoginException e) {
+                        log.info("Login by SAML failed", e);
 
-                    showLoginException(String.format(getMessage("errors.message.samlLoginFailed"), samlSession.getPrincipal()));
-                } catch (Exception e) {
-                    log.warn("Login by SAML failed. Internal error.", e);
+                        showLoginException(String.format(getMessage("errors.message.samlLoginFailed"), samlSession.getPrincipal()));
+                    } catch (Exception e) {
+                        log.warn("Login by SAML failed. Internal error.", e);
 
-                    showUnhandledExceptionOnLogin(e);
-                }
-            });
+                        showUnhandledExceptionOnLogin(e);
+                    }
+                });
+            }
         }
         return false;
     }

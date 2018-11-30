@@ -28,9 +28,11 @@ import java.util.Locale;
 public class SamlSessionPrincipalImpl implements Principal, SamlSessionPrincipal {
 
     protected SamlSession samlSession;
+    protected boolean active;
 
     public SamlSessionPrincipalImpl(SamlSession samlSession) {
         this.samlSession = samlSession;
+        this.active = true;
     }
 
     @Override
@@ -43,14 +45,21 @@ public class SamlSessionPrincipalImpl implements Principal, SamlSessionPrincipal
         return samlSession;
     }
 
+    @Override
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Nullable
     public Locale getLocale() {
-        String locale = samlSession
-                .getCredential().getAttributeAsString("language");
+        String locale = samlSession.getCredential().getAttributeAsString("language");
         if (locale == null) {
             return null;
         }
-
         return Locale.forLanguageTag(locale);
     }
 }

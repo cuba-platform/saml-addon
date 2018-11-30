@@ -21,6 +21,7 @@ import com.haulmont.addon.saml.security.config.SamlConfig;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.web.security.events.AppLoggedOutEvent;
+import com.haulmont.cuba.web.security.events.UserDisconnectedEvent;
 import com.haulmont.cuba.web.sys.RequestContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+
+import java.security.Principal;
 
 import static com.haulmont.addon.saml.web.security.saml.SamlSessionPrincipal.*;
 
@@ -51,28 +55,43 @@ public class SamlLoginLifecycleManager {
 
     @EventListener
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
+    public void onUserLogout(UserDisconnectedEvent event) {
+        if (event.getLoggedOutSession() != null) {
+            RequestContext requestContext = RequestContext.get();
+            if (requestContext != null) {
+                Principal principal = requestContext.getRequest() == null ? null : requestContext.getRequest().getUserPrincipal();
+                if (principal instanceof SamlSessionPrincipalImpl) {
+                    ((SamlSessionPrincipalImpl) principal).setActive(false);
+                }
+            }
+        }
+    }
+
+    @EventListener
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     public void onAppLoggedOut(AppLoggedOutEvent event) {
         if (event.getLoggedOutSession() != null) {
             String connectionCode = null;
 
             RequestContext requestContext = RequestContext.get();
             if (requestContext != null) {
-                SamlSession samlSession = (SamlSession) requestContext.getSession().getAttribute(SAML_SESSION_ATTRIBUTE);
+                HttpSession session = requestContext.getSession();
+                SamlSession samlSession = session == null ? null : (SamlSession) session.getAttribute(SAML_SESSION_ATTRIBUTE);
                 if (samlSession != null) {
                     connectionCode = samlSession.getConnectionCode();
-                    requestContext.getSession().removeAttribute(SAML_SESSION_ATTRIBUTE);
+                    session.removeAttribute(SAML_SESSION_ATTRIBUTE);
                 }
             }
 
             if (event.getRedirectUrl() == null && Boolean.TRUE.equals(samlConfig.getSsoLogout())) {
                 if (StringUtils.isEmpty(connectionCode)) {
-                    log.info("SAML connection not found for user logout. Global SAML logout will be ignored.");
+                    log.info("SAML logout will be ignored for user '{}'.", event.getLoggedOutSession().getCurrentOrSubstitutedUser().getLogin());
                 } else {
                     if (!samlService.isActiveConnection(connectionCode)) {
-                        log.info("SAML connection was deactivated or removed. Global SAML logout will be ignored.");
+                        log.info("SAML connection was deactivated or removed. SAML logout will be ignored for user '{}'.",
+                                event.getLoggedOutSession().getCurrentOrSubstitutedUser().getLogin());
                     } else {
-                        String samlLogoutUrl = getLogoutUrl() + "?" + SAML_CONNECTION_CODE + "=" + connectionCode;
-                        event.setRedirectUrl(samlLogoutUrl);
+                        event.setRedirectUrl(getLogoutUrl() + "?" + SAML_CONNECTION_CODE + "=" + connectionCode);
                     }
                 }
             }

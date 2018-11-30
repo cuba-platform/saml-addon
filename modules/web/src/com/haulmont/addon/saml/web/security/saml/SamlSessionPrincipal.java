@@ -26,4 +26,6 @@ public interface SamlSessionPrincipal {
     String SAML_CONNECTION_CODE = "tenant";
 
     SamlSession getSamlSession();
+
+    boolean isActive();
 }
