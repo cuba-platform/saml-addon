@@ -265,7 +265,7 @@ Each Service Provider must have a unique secret/public connection key. To genera
 
 By default, the example shows the lookup field with list of IDP providers.
 To simplify login, you can use a specific tenant URL. When a user uses such URL, the system automatically redirects you to the specific IDP.
-Example: `http://localhost:8080/app/ssocircle/`. Here `ssocircle` is the SAMLConnection.code. 
+Example: `http://localhost:8080/app/ssocircle?`. Here `ssocircle` is the SAMLConnection.code. 
 
 ## Absent users registration
 
