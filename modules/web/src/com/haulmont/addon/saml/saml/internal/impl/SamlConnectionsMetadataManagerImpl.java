@@ -27,6 +27,11 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.lang.StringUtils;
@@ -64,10 +69,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author adiatullin
@@ -200,7 +202,7 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
 
             provider = httpProvider;
         } else if (connection.getIdpMetadata() != null) {
-            FileStorageMetadataProvider fileStorageProvider = new FileStorageMetadataProvider(connection.getIdpMetadata());
+            FileStorageMetadataProvider fileStorageProvider = new FileStorageMetadataProvider(samlCommunicationService, connection.getIdpMetadata());
             fileStorageProvider.setParserPool(parserPool);
 
             provider = fileStorageProvider;
@@ -406,10 +408,12 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
     }
 
     protected static class FileStorageMetadataProvider extends AbstractReloadingMetadataProvider {
+        protected SamlCommunicationServiceBean communicationServiceBean;
         protected FileDescriptor fd;
 
-        protected FileStorageMetadataProvider(FileDescriptor metadataFileDescriptor) {
-            fd = metadataFileDescriptor;
+        protected FileStorageMetadataProvider(SamlCommunicationServiceBean communicationServiceBean, FileDescriptor metadataFileDescriptor) {
+            this.communicationServiceBean = communicationServiceBean;
+            this.fd = metadataFileDescriptor;
         }
 
         @Override
@@ -420,10 +424,30 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
         @Override
         protected byte[] fetchMetadata() throws MetadataProviderException {
             try {
-                return getFileStorageService().loadFile(fd);
-            } catch (FileStorageException e) {
+                return AppContext.withSecurityContext(new SecurityContext(getSystemSession()), () -> {
+                    try {
+                        return getFileStorageService().loadFile(fd);
+                    } catch (FileStorageException e) {
+                        throw new RuntimeException("Failed to read metadata from file storage", e);
+                    }
+                });
+            } catch (Exception e) {
                 throw new MetadataProviderException(e);
             }
+        }
+
+        protected UserSession getSystemSession() {
+            UserSession systemSession;
+            try {
+                systemSession = getTrustedClientService().getSystemSession(communicationServiceBean.getTrustedClientPassword());
+            } catch (LoginException e) {
+                throw new RuntimeException("Unable to obtain system session.");
+            }
+            return systemSession;
+        }
+
+        protected TrustedClientService getTrustedClientService() {
+            return AppBeans.get(TrustedClientService.NAME);
         }
 
         protected FileStorageService getFileStorageService() {
