@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.haulmont.addon.saml.web.security.saml.SamlSessionPrincipal.SAML_ERROR_ATTRIBUTE;
 import static com.haulmont.addon.saml.web.security.saml.SamlSessionPrincipal.SAML_SESSION_ATTRIBUTE;
 
 /**
@@ -76,6 +77,12 @@ public class SamlLoginHttpRequestFilter implements HttpRequestFilter, Ordered {
         }
         //ignore filtering for saml servlet
         if (StringUtils.startsWith(httpRequest.getRequestURI(), httpRequest.getContextPath() + samlConfig.getSamlBasePath())) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        Object error = httpRequest.getSession().getAttribute(SAML_ERROR_ATTRIBUTE);
+        if (error != null) {
             chain.doFilter(request, response);
             return;
         }

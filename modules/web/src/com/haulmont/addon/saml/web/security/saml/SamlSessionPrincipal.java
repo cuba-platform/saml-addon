@@ -23,6 +23,7 @@ import com.haulmont.addon.saml.security.SamlSession;
  */
 public interface SamlSessionPrincipal {
     String SAML_SESSION_ATTRIBUTE = "SAML_SESSION";
+    String SAML_ERROR_ATTRIBUTE = "SAML_ERROR";
     String SAML_CONNECTION_CODE = "tenant";
 
     SamlSession getSamlSession();

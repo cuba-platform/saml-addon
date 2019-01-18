@@ -54,9 +54,7 @@
 
     <!-- Handler deciding where to redirect user after failed login -->
     <bean id="failureRedirectHandler"
-          class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
-        <property name="useForward" value="true"/>
-        <property name="defaultFailureUrl" value="/"/>
+          class="com.haulmont.addon.saml.saml.authentication.SavedRequestAwareAuthenticationFailureHandler">
     </bean>
 
     <!-- Handler for successful logout -->
