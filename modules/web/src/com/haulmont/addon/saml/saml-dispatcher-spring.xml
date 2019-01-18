@@ -37,19 +37,9 @@
         </security:filter-chain-map>
     </bean>
 
-    <bean id="successLoginHandler" class="com.haulmont.addon.saml.saml.authentication.CompositeAuthenticationSuccessHandler">
-        <constructor-arg name="delegateHandlers">
-            <list>
-                <ref bean="saml_SamlSessionAttributeHandler"/>
-                <ref bean="successRedirectHandler"/>
-            </list>
-        </constructor-arg>
-    </bean>
-
     <!-- Handler deciding where to redirect user after successful login -->
     <bean id="successRedirectHandler"
-          class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-        <property name="defaultTargetUrl" value="/"/>
+          class="com.haulmont.addon.saml.saml.authentication.SamlAuthenticationSuccessHandler">
     </bean>
 
     <!-- Handler deciding where to redirect user after failed login -->
@@ -114,7 +104,7 @@
     <!-- Processing filter for WebSSO profile messages -->
     <bean id="samlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
-        <property name="authenticationSuccessHandler" ref="successLoginHandler"/>
+        <property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
         <property name="authenticationFailureHandler" ref="failureRedirectHandler"/>
     </bean>
 
