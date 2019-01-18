@@ -38,9 +38,9 @@ import static com.haulmont.addon.saml.web.security.saml.SamlSessionPrincipal.SAM
  * @author adiatullin
  */
 @Component("failureRedirectHandler")
-public class SavedRequestAwareAuthenticationFailureHandler extends AbstractAuthenticationTargetUrlRequestHandler implements AuthenticationFailureHandler {
+public class SamlAuthenticationFailureHandler extends AbstractAuthenticationTargetUrlRequestHandler implements AuthenticationFailureHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SavedRequestAwareAuthenticationFailureHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(SamlAuthenticationFailureHandler.class);
 
     protected RequestCache requestCache = new HttpSessionRequestCache();
 

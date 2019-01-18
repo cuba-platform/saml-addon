@@ -54,7 +54,7 @@
 
     <!-- Handler deciding where to redirect user after failed login -->
     <bean id="failureRedirectHandler"
-          class="com.haulmont.addon.saml.saml.authentication.SavedRequestAwareAuthenticationFailureHandler">
+          class="com.haulmont.addon.saml.saml.authentication.SamlAuthenticationFailureHandler">
     </bean>
 
     <!-- Handler for successful logout -->

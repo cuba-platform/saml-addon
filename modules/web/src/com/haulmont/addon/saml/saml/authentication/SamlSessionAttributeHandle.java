@@ -46,6 +46,7 @@ public class SamlSessionAttributeHandle implements AuthenticationSuccessHandler 
         samlSession.setCredential((SAMLCredential) authentication.getCredentials());
         samlSession.setConnectionCode((String) request.getSession().getAttribute(SAML_CONNECTION_CODE));
         request.getSession().removeAttribute(SAML_CONNECTION_CODE);
+        request.getSession().removeAttribute(SAML_ERROR_ATTRIBUTE);
 
         request.getSession().setAttribute(SAML_SESSION_ATTRIBUTE, samlSession);
     }
