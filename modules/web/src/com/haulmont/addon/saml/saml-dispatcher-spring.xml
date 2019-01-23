@@ -59,7 +59,7 @@
 
     <!-- Logger for SAML messages and events -->
     <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
-        <property name="logAllMessages"  value="${cuba.addon.saml.logAllSamlMessages}"/>
+        <property name="logAllMessages" value="${cuba.addon.saml.logAllSamlMessages}"/>
         <!-- Enable these to see the actual SAML Messages in logs -->
         <!-- <property name="logAllMessages" value="true"/>  -->
         <!-- <property name="logErrors" value="true"/>  -->
