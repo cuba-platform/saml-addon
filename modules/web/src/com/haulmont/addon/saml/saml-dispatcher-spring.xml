@@ -59,6 +59,7 @@
 
     <!-- Logger for SAML messages and events -->
     <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
+        <property name="logAllMessages"  value="${cuba.addon.saml.logAllSamlMessages}"/>
         <!-- Enable these to see the actual SAML Messages in logs -->
         <!-- <property name="logAllMessages" value="true"/>  -->
         <!-- <property name="logErrors" value="true"/>  -->
@@ -150,11 +151,17 @@
 
     <!-- SAML 2.0 WebSSO Assertion Consumer -->
     <bean id="webSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerImpl">
-        <property name="maxAuthenticationAge" value="7200"/>
+        <property name="responseSkew" value="${cuba.addon.saml.responseSkewSec}"/>
+        <property name="maxAuthenticationAge" value="${cuba.addon.saml.maxAuthenticationAgeSec}"/>
+        <property name="maxAssertionTime" value="${cuba.addon.saml.maxAssertionTimeSec}"/>
     </bean>
 
     <!-- SAML 2.0 Holder-of-Key WebSSO Assertion Consumer -->
-    <bean id="hokWebSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl"/>
+    <bean id="hokWebSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl">
+        <property name="responseSkew" value="${cuba.addon.saml.responseSkewSec}"/>
+        <property name="maxAuthenticationAge" value="${cuba.addon.saml.maxAuthenticationAgeSec}"/>
+        <property name="maxAssertionTime" value="${cuba.addon.saml.maxAssertionTimeSec}"/>
+    </bean>
 
     <!-- SAML 2.0 Web SSO profile -->
     <bean id="webSSOprofile" class="org.springframework.security.saml.websso.WebSSOProfileImpl"/>

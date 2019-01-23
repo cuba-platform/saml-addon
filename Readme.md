@@ -234,6 +234,10 @@ cuba.addon.saml.basePath = /saml
 cuba.addon.saml.logoutPath = /logout
 cuba.addon.saml.loginPath = /login
 cuba.addon.saml.metadataPath = /metadata
+cuba.addon.saml.responseSkewSec = 60
+cuba.addon.saml.maxAuthenticationAgeSec = 7200
+cuba.addon.saml.maxAssertionTimeSec = 3000
+cuba.addon.saml.logAllSamlMessages = true
 ```
 
 You can observe the details of the implementation in the corresponding demo project.
@@ -318,6 +322,38 @@ The `getName()` method should return a user-friendly name, to show in the lookup
 
 * __Interface:__ *SamlConfig*
 
+### cuba.addon.saml.responseSkewSec
+
+* __Description:__ Maximum difference between local time and time of the assertion creation which still allows message to be processed. Basically determines maximum difference between clocks of the IDP and SP machines. (in seconds)
+
+* __Default value:__ *60*
+
+* __Type:__ used in the Web Client
+
+* __Interface:__ *SamlConfig*
+
+
+### cuba.addon.saml.maxAuthenticationAgeSec
+
+* __Description:__ Maximum time between users authentication and processing of the AuthNResponse message. (in seconds)
+
+* __Default value:__ *7200*
+
+* __Type:__ used in the Web Client
+
+* __Interface:__ *SamlConfig*
+
+
+### cuba.addon.saml.maxAssertionTimeSec
+
+* __Description:__ Maximum time between assertion creation and current time when the assertion is usable. (in seconds)
+
+* __Default value:__ *3000*
+
+* __Type:__ used in the Web Client
+
+* __Interface:__ *SamlConfig*
+
 
 ### cuba.addon.saml.ssoLogout
 
@@ -346,6 +382,16 @@ The `getName()` method should return a user-friendly name, to show in the lookup
 * __Description:__ Defines the address of remote proxy server if a proxy server is using, e.g. "https://myhost.com".
 
 * __Default value:__ **
+
+* __Type:__ used in the Web Client
+
+* __Interface:__ *SamlConfig*
+
+### cuba.addon.saml.logAllSamlMessages
+
+* __Description:__ Determines if all SAML messages should be logged.
+
+* __Default value:__ *true*
 
 * __Type:__ used in the Web Client
 
