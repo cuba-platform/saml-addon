@@ -101,6 +101,6 @@ public interface SamlConfig extends Config {
      * @return determines if all SAML messages should be logged.
      */
     @Property("cuba.addon.saml.logAllSamlMessages")
-    @Default("false")
+    @DefaultBoolean(false)
     Boolean getLogAllSamlMessages();
 }
