@@ -13,6 +13,7 @@ create table SAMLADDON_SAML_CONNECTION (
     CODE varchar(100) not null,
     SP_ID varchar(255) not null,
     ACTIVE tinyint default 0,
+    CREATE_USERS tinyint default 1,
     KEYSTORE_ID uniqueidentifier,
     KEYSTORE_LOGIN varchar(255),
     KEYSTORE_PASSWORD varchar(255),

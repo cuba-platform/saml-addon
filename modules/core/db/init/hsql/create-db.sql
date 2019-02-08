@@ -13,6 +13,7 @@ create table SAMLADDON_SAML_CONNECTION (
     CODE varchar(100) not null,
     SP_ID varchar(255) not null,
     ACTIVE boolean,
+    CREATE_USERS boolean,
     KEYSTORE_ID varchar(36),
     KEYSTORE_LOGIN varchar(255),
     KEYSTORE_PASSWORD varchar(255),
@@ -23,6 +24,7 @@ create table SAMLADDON_SAML_CONNECTION (
     --
     primary key (ID)
 )^
+
 alter table SAMLADDON_SAML_CONNECTION add constraint FK_SAMLADDON_SAML_CONNECTION_ON_KEYSTORE foreign key (KEYSTORE_ID) references SYS_FILE(ID)^
 create index IDX_SAMLADDON_SAML_CONNECTION_ON_KEYSTORE on SAMLADDON_SAML_CONNECTION (KEYSTORE_ID)^
 

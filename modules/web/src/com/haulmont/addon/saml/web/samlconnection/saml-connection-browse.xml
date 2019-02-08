@@ -24,7 +24,8 @@
             <properties include=".*"/>
         </filter>
         <groupTable id="samlConnectionsTable"
-                    width="100%" multiselect="true">
+                    multiselect="true"
+                    width="100%">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
@@ -33,11 +34,13 @@
             </actions>
             <columns>
                 <column id="active"/>
+                <column id="createUsers"/>
                 <column id="name"/>
                 <column id="code"/>
                 <column id="spId"/>
                 <column id="idpMetadataUrl"/>
-                <column id="idpMetadata.name" caption="msg://com.haulmont.addon.saml.entity/SamlConnection.idpMetadata"/>
+                <column id="idpMetadata.name"
+                        caption="msg://com.haulmont.addon.saml.entity/SamlConnection.idpMetadata"/>
                 <column id="defaultGroup"/>
                 <column id="processingService"/>
             </columns>
