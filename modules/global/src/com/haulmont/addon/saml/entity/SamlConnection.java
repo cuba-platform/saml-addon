@@ -16,17 +16,17 @@
 
 package com.haulmont.addon.saml.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.security.entity.Group;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author adiatullin
@@ -40,6 +40,9 @@ public class SamlConnection extends StandardEntity {
     @NotNull
     @Column(name = "NAME", nullable = false)
     private String name;
+
+    @Column(name = "CREATE_USERS")
+    protected Boolean createUsers = true;
 
     @NotNull
     @Column(name = "CODE", nullable = false, length = 100)
@@ -75,13 +78,22 @@ public class SamlConnection extends StandardEntity {
 
     @NotNull
     @OnDeleteInverse(DeletePolicy.DENY)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DEFAULT_GROUP_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "DEFAULT_GROUP_ID")
     private Group defaultGroup;
 
     @NotNull
     @Column(name = "PROCESSING_SERVICE", nullable = false)
     private String processingService;
+
+
+    public void setCreateUsers(Boolean createUsers) {
+        this.createUsers = createUsers;
+    }
+
+    public Boolean getCreateUsers() {
+        return createUsers;
+    }
 
 
     public String getName() {

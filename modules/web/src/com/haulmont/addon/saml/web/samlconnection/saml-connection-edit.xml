@@ -17,18 +17,21 @@
                 width="800"/>
     <layout expand="metadataSplit"
             spacing="true">
-        <groupBox caption="msg://captions.general" collapsable="true">
+        <groupBox caption="msg://captions.general"
+                  collapsable="true">
             <fieldGroup id="fieldGroup"
                         datasource="samlConnectionDs">
                 <column width="300px">
                     <field property="name"/>
                     <field property="code"/>
                     <field property="active"/>
+                    <field caption="Create Users" property="createUsers"/>
                 </column>
                 <column width="300px">
                     <field property="keystoreLogin"/>
                     <field property="keystorePassword">
-                        <passwordField datasource="samlConnectionDs" property="keystorePassword"/>
+                        <passwordField datasource="samlConnectionDs"
+                                       property="keystorePassword"/>
                     </field>
                     <field property="keystore"/>
                 </column>
@@ -42,12 +45,23 @@
                 </column>
             </fieldGroup>
         </groupBox>
-        <split id="metadataSplit" width="100%" orientation="horizontal">
-            <vbox width="100%" height="100%" spacing="true" expand="spMetadataView" margin="true,true,false,false">
-                <hbox spacing="true" width="100%" expand="spIdField">
-                    <textField id="spIdField" datasource="samlConnectionDs" property="spId"
-                               inputPrompt="msg://captions.serviceProviderHint"/>
-                    <button id="spMetadataRefreshBtn" caption="msg://actions.refresh" icon="font-icon:REFRESH"/>
+        <split id="metadataSplit"
+               orientation="horizontal"
+               width="100%">
+            <vbox expand="spMetadataView"
+                  height="100%"
+                  margin="true,true,false,false"
+                  spacing="true">
+                <hbox expand="spIdField"
+                      spacing="true"
+                      width="100%">
+                    <textField id="spIdField"
+                               datasource="samlConnectionDs"
+                               inputPrompt="msg://captions.serviceProviderHint"
+                               property="spId"/>
+                    <button id="spMetadataRefreshBtn"
+                            caption="msg://actions.refresh"
+                            icon="font-icon:REFRESH"/>
                     <progressBar id="loadingSpMetadataBar"
                                  align="MIDDLE_RIGHT"
                                  stylename="indeterminate-circle"
@@ -58,23 +72,33 @@
                                   mode="XML"
                                   width="100%"/>
             </vbox>
-            <vbox width="100%" height="100%" spacing="true" expand="idpMetadataView" margin="true" id="dropZone">
-                <hbox spacing="true" width="100%" expand="idpMetadataUrlField">
+            <vbox id="dropZone"
+                  expand="idpMetadataView"
+                  height="100%"
+                  margin="true"
+                  spacing="true">
+                <hbox expand="idpMetadataUrlField"
+                      spacing="true"
+                      width="100%">
                     <upload id="idpMetadataUploadField"
-                            datasource="samlConnectionDs"
-                            property="idpMetadata"
-                            fileStoragePutMode="IMMEDIATE"
-                            uploadButtonIcon="icons/upload.png"
-                            uploadButtonCaption="msg://captions.idpMetadataUpload"
-                            dropZone="dropZone"
-                            showClearButton="true"
+                            align="MIDDLE_LEFT"
                             clearButtonIcon="icons/close.png"
-                            clearButtonCaption=""
-                            align="MIDDLE_LEFT"/>
-                    <label value="msg://captions.or" align="MIDDLE_CENTER"/>
-                    <textField id="idpMetadataUrlField" datasource="samlConnectionDs" property="idpMetadataUrl"
-                               inputPrompt="msg://captions.identityProviderHint"/>
-                    <button id="idpMetadataRefreshBtn" caption="msg://actions.refresh" icon="font-icon:REFRESH"/>
+                            datasource="samlConnectionDs"
+                            dropZone="dropZone"
+                            fileStoragePutMode="IMMEDIATE"
+                            property="idpMetadata"
+                            showClearButton="true"
+                            uploadButtonCaption="msg://captions.idpMetadataUpload"
+                            uploadButtonIcon="icons/upload.png"/>
+                    <label align="MIDDLE_CENTER"
+                           value="msg://captions.or"/>
+                    <textField id="idpMetadataUrlField"
+                               datasource="samlConnectionDs"
+                               inputPrompt="msg://captions.identityProviderHint"
+                               property="idpMetadataUrl"/>
+                    <button id="idpMetadataRefreshBtn"
+                            caption="msg://actions.refresh"
+                            icon="font-icon:REFRESH"/>
                     <progressBar id="loadingIdpMetadataBar"
                                  align="MIDDLE_RIGHT"
                                  stylename="indeterminate-circle"

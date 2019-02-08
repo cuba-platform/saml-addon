@@ -21,9 +21,13 @@ import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -38,6 +42,8 @@ import java.util.Objects;
 @Component
 public class BaseSamlProcessor implements SamlProcessor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseSamlProcessor.class);
+
     @Inject
     protected Messages messages;
     @Inject
@@ -50,6 +56,15 @@ public class BaseSamlProcessor implements SamlProcessor {
         return getMessage("baseSamlConnectionProcessor.name");
     }
 
+    /**
+     * Method return null if user does not exist in the system and user creation flag is disabled
+     * Return existed user information if user present in the system
+     * Create and return new user if user is not present in the system and user creation flag is enabled
+     * @param samlSession SAML sessions
+     * @param connection  current session SAML connection
+     * @return
+     */
+    @Nullable
     @Override
     public User findOrRegisterUser(SamlSession samlSession, SamlConnection connection) {
         EntityManager em = persistence.getEntityManager();
@@ -59,21 +74,27 @@ public class BaseSamlProcessor implements SamlProcessor {
             return existing;
         }
 
-        // Register new user
-        User user = metadata.create(User.class);
-        user.setGroup(connection.getDefaultGroup());
-        user.setActive(true);
+        if (connection.getCreateUsers()) {
+            // Register new user
+            User user = metadata.create(User.class);
+            user.setGroup(connection.getDefaultGroup());
+            user.setActive(true);
 
-        populateLogin(user, samlSession, connection);
-        populateEmail(user, samlSession, connection);
-        populateFirstName(user, samlSession, connection);
-        populateMiddleName(user, samlSession, connection);
-        populateLastName(user, samlSession, connection);
-        populateDetails(user, samlSession, connection);
+            populateLogin(user, samlSession, connection);
+            populateEmail(user, samlSession, connection);
+            populateFirstName(user, samlSession, connection);
+            populateMiddleName(user, samlSession, connection);
+            populateLastName(user, samlSession, connection);
+            populateDetails(user, samlSession, connection);
 
-        em.persist(user);
+            em.persist(user);
 
-        return user;
+            return user;
+        } else {
+            LOGGER.debug("User does not exist in the system");
+            return null;
+        }
+
     }
 
     protected void populateLogin(User user, SamlSession samlSession, SamlConnection connection) {
