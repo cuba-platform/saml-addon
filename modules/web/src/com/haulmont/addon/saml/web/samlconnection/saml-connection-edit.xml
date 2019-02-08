@@ -25,7 +25,7 @@
                     <field property="name"/>
                     <field property="code"/>
                     <field property="active"/>
-                    <field caption="Create Users" property="createUsers"/>
+                    <field caption="msg://captions.createUsers" property="createUsers"/>
                 </column>
                 <column width="300px">
                     <field property="keystoreLogin"/>

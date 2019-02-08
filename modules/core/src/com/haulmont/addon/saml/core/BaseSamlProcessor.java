@@ -60,6 +60,7 @@ public class BaseSamlProcessor implements SamlProcessor {
      * Method return null if user does not exist in the system and user creation flag is disabled
      * Return existed user information if user present in the system
      * Create and return new user if user is not present in the system and user creation flag is enabled
+     *
      * @param samlSession SAML sessions
      * @param connection  current session SAML connection
      * @return
@@ -91,6 +92,7 @@ public class BaseSamlProcessor implements SamlProcessor {
 
             return user;
         } else {
+            LOGGER.debug("User Creation is disabled for current SAML connection '{}'", connection.getName());
             LOGGER.debug("User does not exist in the system");
             return null;
         }
