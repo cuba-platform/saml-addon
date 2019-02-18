@@ -8,10 +8,10 @@
     <dsContext>
         <datasource id="samlConnectionDs"
                     class="com.haulmont.addon.saml.entity.SamlConnection"
-                    view="connection.edit">
-            <datasource id="keystoreDs"
-                        property="keystore"/>
-        </datasource>
+                    view="connection.edit"/>
+        <collectionDatasource id="keystoresDs"
+                              class="com.haulmont.addon.saml.entity.KeyStore"
+                              view="keyStore-view-edit"/>
     </dsContext>
     <dialogMode height="600"
                 width="800"/>
@@ -21,19 +21,14 @@
                   collapsable="true">
             <fieldGroup id="fieldGroup"
                         datasource="samlConnectionDs">
+                <column width="30px">
+                    <field property="active"/>
+                    <field caption="msg://captions.createUsers"
+                           property="createUsers"/>
+                </column>
                 <column width="300px">
                     <field property="name"/>
                     <field property="code"/>
-                    <field property="active"/>
-                    <field caption="msg://captions.createUsers" property="createUsers"/>
-                </column>
-                <column width="300px">
-                    <field property="keystoreLogin"/>
-                    <field property="keystorePassword">
-                        <passwordField datasource="samlConnectionDs"
-                                       property="keystorePassword"/>
-                    </field>
-                    <field property="keystore"/>
                 </column>
                 <column width="300px">
                     <field property="defaultGroup"/>
@@ -42,6 +37,13 @@
                                      datasource="samlConnectionDs"
                                      property="processingService"/>
                     </field>
+                </column>
+                <column width="300px">
+                    <field caption="msg://captions.keystore"
+                           optionsDatasource="keystoresDs"
+                           property="keystore"/>
+                    <field id="keystoreManipulatingBtns"
+                           generator="createKeyStoreManipulatingButtonField"/>
                 </column>
             </fieldGroup>
         </groupBox>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.addon.saml.web.keystore.KeyStoreBrowse"
+        focusComponent="keyStoresTable"
+        lookupComponent="keyStoresTable"
+        messagesPack="com.haulmont.addon.saml.web.keystore">
+    <dsContext>
+        <groupDatasource id="keyStoresDs"
+                         class="com.haulmont.addon.saml.entity.KeyStore"
+                         view="keyStore-view-browser">
+            <query>
+                <![CDATA[select e from samladdon$KeyStore e]]>
+            </query>
+        </groupDatasource>
+    </dsContext>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="keyStoresTable"
+            spacing="true">
+        <filter id="filter"
+                applyTo="keyStoresTable"
+                datasource="keyStoresDs">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="keyStoresTable"
+                    width="100%">
+            <actions>
+                <action id="create"
+                        openType="DIALOG"/>
+                <action id="edit"
+                        openType="DIALOG"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="login"/>
+                <!--<column id="password"/>-->
+                <column id="description"/>
+            </columns>
+            <rows datasource="keyStoresDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="keyStoresTable.create"/>
+                <button id="editBtn"
+                        action="keyStoresTable.edit"/>
+                <button id="removeBtn"
+                        action="keyStoresTable.remove"/>
+            </buttonsPanel>
+        </groupTable>
+    </layout>
+</window>

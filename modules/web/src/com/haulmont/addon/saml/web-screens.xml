@@ -4,4 +4,8 @@
             template="com/haulmont/addon/saml/web/samlconnection/saml-connection-browse.xml"/>
     <screen id="samladdon$SamlConnection.edit"
             template="com/haulmont/addon/saml/web/samlconnection/saml-connection-edit.xml"/>
+    <screen id="samladdon$KeyStore.browse"
+            template="com/haulmont/addon/saml/web/keystore/key-store-browse.xml"/>
+    <screen id="samladdon$KeyStore.edit"
+            template="com/haulmont/addon/saml/web/keystore/key-store-edit.xml"/>
 </screen-config>

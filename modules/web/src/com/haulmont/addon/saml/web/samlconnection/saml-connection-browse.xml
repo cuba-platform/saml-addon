@@ -13,50 +13,94 @@
                 <![CDATA[select e from samladdon$SamlConnection e]]>
             </query>
         </groupDatasource>
+        <groupDatasource id="keyStoresDs"
+                         class="com.haulmont.addon.saml.entity.KeyStore"
+                         view="keyStore-view-browser">
+            <query>
+                <![CDATA[select e from samladdon$KeyStore e]]>
+            </query>
+        </groupDatasource>
     </dsContext>
     <dialogMode height="600"
                 width="800"/>
-    <layout expand="samlConnectionsTable"
-            spacing="true">
-        <filter id="filter"
-                applyTo="samlConnectionsTable"
-                datasource="samlConnectionsDs">
-            <properties include=".*"/>
-        </filter>
-        <groupTable id="samlConnectionsTable"
-                    multiselect="true"
-                    width="100%">
-            <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="activation"/>
-                <action id="remove"/>
-            </actions>
-            <columns>
-                <column id="active"/>
-                <column id="createUsers"/>
-                <column id="name"/>
-                <column id="code"/>
-                <column id="spId"/>
-                <column id="idpMetadataUrl"/>
-                <column id="idpMetadata.name"
-                        caption="msg://com.haulmont.addon.saml.entity/SamlConnection.idpMetadata"/>
-                <column id="defaultGroup"/>
-                <column id="processingService"/>
-            </columns>
-            <rows datasource="samlConnectionsDs"/>
-            <rowsCount/>
-            <buttonsPanel id="buttonsPanel"
-                          alwaysVisible="true">
-                <button id="createBtn"
-                        action="samlConnectionsTable.create"/>
-                <button id="editBtn"
-                        action="samlConnectionsTable.edit"/>
-                <button id="activationBtn"
-                        action="samlConnectionsTable.activation"/>
-                <button id="removeBtn"
-                        action="samlConnectionsTable.remove"/>
-            </buttonsPanel>
-        </groupTable>
+    <layout spacing="true">
+        <tabSheet id="tabSheet">
+            <tab id="samlConnectionsTab"
+                 caption="Connections"
+                 margin="true,false,false,false"
+                 spacing="true">
+                <filter id="filter"
+                        applyTo="samlConnectionsTable"
+                        datasource="samlConnectionsDs">
+                    <properties include=".*"/>
+                </filter>
+                <groupTable id="samlConnectionsTable"
+                            height="100%"
+                            multiselect="true"
+                            width="100%">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="activation"/>
+                        <action id="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="active"/>
+                        <column id="createUsers"/>
+                        <column id="name"/>
+                        <column id="code"/>
+                        <column id="spId"/>
+                        <column id="idpMetadataUrl"/>
+                        <column id="idpMetadata.name"
+                                caption="msg://com.haulmont.addon.saml.entity/SamlConnection.idpMetadata"/>
+                        <column id="defaultGroup"/>
+                        <column id="processingService"/>
+                    </columns>
+                    <rows datasource="samlConnectionsDs"/>
+                    <rowsCount/>
+                    <buttonsPanel id="buttonspanel_1"
+                                  alwaysVisible="true">
+                        <button id="button_1"
+                                action="samlConnectionsTable.create"/>
+                        <button id="button_2"
+                                action="samlConnectionsTable.edit"/>
+                        <button id="activationBtn"
+                                action="samlConnectionsTable.activation"/>
+                        <button id="button_3"
+                                action="samlConnectionsTable.remove"/>
+                    </buttonsPanel>
+                </groupTable>
+            </tab>
+            <tab id="keystoresTab"
+                 caption="Keystore"
+                 margin="true,false,false,false"
+                 spacing="true">
+                <groupTable id="keyStoresTable"
+                            width="100%">
+                    <actions>
+                        <action id="create"
+                                openType="DIALOG"/>
+                        <action id="edit"
+                                openType="DIALOG"/>
+                        <action id="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="login"/>
+                        <column id="description"/>
+                    </columns>
+                    <rows datasource="keyStoresDs"/>
+                    <rowsCount/>
+                    <buttonsPanel id="buttonsPanel"
+                                  alwaysVisible="true">
+                        <button id="createBtn"
+                                action="keyStoresTable.create"/>
+                        <button id="editBtn"
+                                action="keyStoresTable.edit"/>
+                        <button id="removeBtn"
+                                action="keyStoresTable.remove"/>
+                    </buttonsPanel>
+                </groupTable>
+            </tab>
+        </tabSheet>
     </layout>
 </window>

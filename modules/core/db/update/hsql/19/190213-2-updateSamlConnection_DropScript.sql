@@ -1,0 +1,3 @@
+alter table SAMLADDON_SAML_CONNECTION drop column KEYSTORE_ID__U61132 cascade ;
+alter table SAMLADDON_SAML_CONNECTION drop column KEYSTORE_LOGIN__U72224 cascade ;
+alter table SAMLADDON_SAML_CONNECTION drop column KEYSTORE_PASSWORD__U32795 cascade ;

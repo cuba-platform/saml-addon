@@ -1,31 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
-
     <view class="com.haulmont.addon.saml.entity.SamlConnection"
           extends="_local"
           name="connection.browse">
-        <property name="defaultGroup" view="_minimal"/>
-        <property name="idpMetadata" view="_minimal"/>
+        <property name="defaultGroup"
+                  view="_minimal"/>
+        <property name="idpMetadata"
+                  view="_minimal"/>
+        <property name="keystore"
+                  view="_minimal"/>
     </view>
-
     <view class="com.haulmont.addon.saml.entity.SamlConnection"
           extends="_local"
           name="connection.edit">
-        <property name="keystore" view="_minimal"/>
-        <property name="defaultGroup" view="_minimal"/>
-        <property name="idpMetadata" view="_minimal"/>
+        <property name="defaultGroup"
+                  view="_minimal"/>
+        <property name="idpMetadata"
+                  view="_minimal"/>
+        <property name="keystore"
+                  view="_minimal"/>
     </view>
-
     <view class="com.haulmont.addon.saml.entity.SamlConnection"
           extends="_local"
           name="connection.userCreation">
-        <property name="defaultGroup" view="_minimal"/>
+        <property name="defaultGroup"
+                  view="_minimal"/>
     </view>
-
     <view class="com.haulmont.addon.saml.entity.SamlConnection"
           extends="_local"
           name="connection.activation">
-        <property name="keystore" view="_minimal"/>
-        <property name="idpMetadata" view="_minimal"/>
+        <property name="idpMetadata"
+                  view="_minimal"/>
+    </view>
+    <view class="com.haulmont.addon.saml.entity.KeyStore"
+          extends="_local"
+          name="keyStore-view-browser"/>
+    <view class="com.haulmont.addon.saml.entity.KeyStore"
+          extends="_local"
+          name="keyStore-view-edit">
+        <property name="key"
+                  view="_minimal"/>
     </view>
 </views>

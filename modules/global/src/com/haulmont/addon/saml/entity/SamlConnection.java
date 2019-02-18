@@ -20,6 +20,8 @@ import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Lookup;
+import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -55,18 +57,6 @@ public class SamlConnection extends StandardEntity {
     @Column(name = "ACTIVE")
     private Boolean active = false;
 
-    @Composition
-    @OnDelete(DeletePolicy.CASCADE)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "KEYSTORE_ID")
-    private FileDescriptor keystore;
-
-    @Column(name = "KEYSTORE_LOGIN")
-    private String keystoreLogin;
-
-    @Column(name = "KEYSTORE_PASSWORD")
-    private String keystorePassword;
-
     @Column(name = "IDP_METADATA_URL")
     private String idpMetadataUrl;
 
@@ -86,6 +76,19 @@ public class SamlConnection extends StandardEntity {
     @Column(name = "PROCESSING_SERVICE", nullable = false)
     private String processingService;
 
+
+    @Lookup(type = LookupType.DROPDOWN)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "KEYSTORE_ID")
+    protected KeyStore keystore;
+
+    public void setKeystore(KeyStore keystore) {
+        this.keystore = keystore;
+    }
+
+    public KeyStore getKeystore() {
+        return keystore;
+    }
 
     public void setCreateUsers(Boolean createUsers) {
         this.createUsers = createUsers;
@@ -126,30 +129,6 @@ public class SamlConnection extends StandardEntity {
 
     public void setSpId(String spId) {
         this.spId = spId;
-    }
-
-    public FileDescriptor getKeystore() {
-        return keystore;
-    }
-
-    public void setKeystore(FileDescriptor keystore) {
-        this.keystore = keystore;
-    }
-
-    public String getKeystoreLogin() {
-        return keystoreLogin;
-    }
-
-    public void setKeystoreLogin(String keystoreLogin) {
-        this.keystoreLogin = keystoreLogin;
-    }
-
-    public String getKeystorePassword() {
-        return keystorePassword;
-    }
-
-    public void setKeystorePassword(String keystorePassword) {
-        this.keystorePassword = keystorePassword;
     }
 
     public String getIdpMetadataUrl() {
