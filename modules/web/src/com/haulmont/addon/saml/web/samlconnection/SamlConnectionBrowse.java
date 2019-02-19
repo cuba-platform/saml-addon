@@ -16,19 +16,17 @@
 
 package com.haulmont.addon.saml.web.samlconnection;
 
-import com.haulmont.addon.saml.entity.KeyStore;
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.web.security.saml.SamlCommunicationService;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections.CollectionUtils;
@@ -49,21 +47,7 @@ public class SamlConnectionBrowse extends AbstractLookup {
     @Inject
     protected CollectionDatasource<SamlConnection, UUID> samlConnectionsDs;
     @Inject
-    private GroupDatasource<KeyStore, UUID> keyStoresDs;
-    @Inject
     protected Table<SamlConnection> samlConnectionsTable;
-
-    @Inject
-    private TabSheet tabSheet;
-
-    private static final String samlConnectionsTabName = "samlConnectionsTab";
-    private static final String keystresTabName = "keystoresTab";
-
-    private static final String MESSAGE_PACK = "com.haulmont.addon.saml.web.samlconnection";
-    private static final String CONNECTIONS_TAB_CAPTION_EMPTY = "connectionTab.empty";
-    private static final String CONNECTIONS_TAB_CAPTION_WITH_CUSTOMERS = "connectionTab.notEmpty";
-    private static final String KEYSTORE_TAB_CAPTION_EMPTY = "keystoresTab.empty";
-    private static final String KEYSTORE_TAB_CAPTION_WITH_CUSTOMERS = "keystoresTab.notEmpty";
 
     @Override
     public void init(Map<String, Object> params) {
@@ -71,29 +55,6 @@ public class SamlConnectionBrowse extends AbstractLookup {
 
         initActions();
         initTableColumns();
-        initTabs();
-    }
-
-    protected void initTabs() {
-        samlConnectionsDs.addCollectionChangeListener(event -> {
-            TabSheet.Tab connectionTab = tabSheet.getTab(samlConnectionsTabName);
-            if (samlConnectionsDs.size() > 0) {
-                connectionTab.setCaption(messages.formatMessage(
-                        MESSAGE_PACK, CONNECTIONS_TAB_CAPTION_WITH_CUSTOMERS, samlConnectionsDs.size()));
-            } else {
-                connectionTab.setCaption(messages.getMessage(MESSAGE_PACK, CONNECTIONS_TAB_CAPTION_EMPTY));
-            }
-        });
-
-        keyStoresDs.addCollectionChangeListener(event -> {
-            TabSheet.Tab keystoresTab = tabSheet.getTab(keystresTabName);
-            if (keyStoresDs.size() > 0) {
-                keystoresTab.setCaption(messages.formatMessage(
-                        MESSAGE_PACK, KEYSTORE_TAB_CAPTION_WITH_CUSTOMERS, keyStoresDs.size()));
-            } else {
-                keystoresTab.setCaption(messages.getMessage(MESSAGE_PACK, KEYSTORE_TAB_CAPTION_EMPTY));
-            }
-        });
     }
 
     protected void initActions() {
@@ -180,5 +141,9 @@ public class SamlConnectionBrowse extends AbstractLookup {
 
     protected void initTableColumns() {
         FileDownloadHelper.initGeneratedColumn(samlConnectionsTable, "idpMetadata");
+    }
+
+    public void openKeyStoreBrowser() {
+        openWindow("samladdon$KeyStore.browse", WindowManager.OpenType.DIALOG);
     }
 }

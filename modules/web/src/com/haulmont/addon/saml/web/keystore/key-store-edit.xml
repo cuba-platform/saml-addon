@@ -10,8 +10,7 @@
                     class="com.haulmont.addon.saml.entity.KeyStore"
                     view="keyStore-view-edit"/>
     </dsContext>
-    <dialogMode height="600"
-                width="800"/>
+    <dialogMode width="AUTO"/>
     <layout expand="windowActions"
             spacing="true">
         <fieldGroup id="fieldGroup"
@@ -20,7 +19,7 @@
                 <field property="login"/>
                 <field property="password">
                     <passwordField datasource="keyStoreDs"
-                               property="password"/>
+                                   property="password"/>
                 </field>
                 <field property="description"/>
                 <field property="key"/>

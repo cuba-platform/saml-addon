@@ -341,35 +341,14 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
         }
     }
 
-    public Component createKeyStoreManipulatingButtonField(Datasource<KeyStore> datasource, String fieldId) {
-        HBoxLayout layout = componentsFactory.createComponent(HBoxLayout.class);
-        layout.setWidthFull();
-
-        Button createKeystoreBtn = componentsFactory.createComponent(Button.class);
-        createKeystoreBtn.setAction(new AbstractAction("Create KeyStore") {
-            @Override
-            public void actionPerform(Component component) {
-                KeyStore keyStore = metadata.create(KeyStore.class);
-                AbstractEditor editor = openEditor(
-                        "samladdon$KeyStore.edit",
-                        keyStore,
-                        WindowManager.OpenType.DIALOG
-                );
-                //update list of entities in dropdown
-                editor.addCloseListener(actionId -> keystoresDs.refresh());
-            }
-        });
-        layout.add(createKeystoreBtn);
-
-        Button viewKeystoreBtn = componentsFactory.createComponent(Button.class);
-        viewKeystoreBtn.setAction(new AbstractAction("View KeyStore") {
-            @Override
-            public void actionPerform(Component component) {
-                openWindow("samladdon$KeyStore.browse", WindowManager.OpenType.DIALOG);
-            }
-        });
-        layout.add(viewKeystoreBtn);
-
-        return layout;
+    public void createKeystorePickerFieldAction() {
+        KeyStore keyStore = metadata.create(KeyStore.class);
+        AbstractEditor editor = openEditor(
+                "samladdon$KeyStore.edit",
+                keyStore,
+                WindowManager.OpenType.DIALOG
+        );
+        //update list of entities in dropdown
+        editor.addCloseListener(actionId -> keystoresDs.refresh());
     }
 }

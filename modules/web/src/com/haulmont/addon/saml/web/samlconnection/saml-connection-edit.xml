@@ -13,8 +13,7 @@
                               class="com.haulmont.addon.saml.entity.KeyStore"
                               view="keyStore-view-edit"/>
     </dsContext>
-    <dialogMode height="600"
-                width="800"/>
+    <dialogMode width="AUTO"/>
     <layout expand="metadataSplit"
             spacing="true">
         <groupBox caption="msg://captions.general"
@@ -39,11 +38,23 @@
                     </field>
                 </column>
                 <column width="300px">
-                    <field caption="msg://captions.keystore"
-                           optionsDatasource="keystoresDs"
-                           property="keystore"/>
-                    <field id="keystoreManipulatingBtns"
-                           generator="createKeyStoreManipulatingButtonField"/>
+                    <field property="keystore" caption="msg://captions.keystore">
+                        <lookupPickerField
+                                datasource="samlConnectionDs"
+                                optionsDatasource="keystoresDs"
+                                property="keystore"
+                                required="true"
+                                caption="msg://captions.keystore">
+                            <actions>
+                                <action id="create"
+                                        icon="PLUS"
+                                        invoke="createKeystorePickerFieldAction"
+                                        openType="DIALOG"/>
+                                <action id="open"
+                                        openType="DIALOG"/>
+                            </actions>
+                        </lookupPickerField>
+                    </field>
                 </column>
             </fieldGroup>
         </groupBox>

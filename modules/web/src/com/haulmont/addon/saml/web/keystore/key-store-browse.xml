@@ -34,7 +34,6 @@
             </actions>
             <columns>
                 <column id="login"/>
-                <!--<column id="password"/>-->
                 <column id="description"/>
             </columns>
             <rows datasource="keyStoresDs"/>

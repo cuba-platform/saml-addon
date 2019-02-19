@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@NamePattern("%s|description")
+@NamePattern("%s : %s|login,description")
 @Table(name = "SAMLADDON_KEY_STORE")
 @Entity(name = "samladdon$KeyStore")
 public class KeyStore extends StandardEntity {
@@ -20,6 +20,7 @@ public class KeyStore extends StandardEntity {
     @Column(name = "LOGIN", nullable = false, length = 100)
     protected String login;
 
+    @NotNull
     @Composition
     @OnDelete(DeletePolicy.CASCADE)
     @OneToOne(fetch = FetchType.LAZY)
