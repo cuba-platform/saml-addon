@@ -35,6 +35,12 @@
           name="connection.activation">
         <property name="idpMetadata"
                   view="_minimal"/>
+        <property name="keystore"
+                  view="_minimal">
+            <property name="key"
+                      view="_minimal"/>
+            <property name="password"/>
+        </property>
     </view>
     <view class="com.haulmont.addon.saml.entity.KeyStore"
           extends="_local"
