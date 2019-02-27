@@ -1,10 +1,11 @@
 package com.haulmont.addon.saml.crypto;
 
+import com.haulmont.addon.saml.crypto.config.EncryptionConfig;
 import com.haulmont.addon.saml.entity.KeyStore;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
@@ -16,14 +17,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Base64;
+import java.util.UUID;
 
 
-@Component(EncryptorImpl.NAME)
-public class EncryptorImpl implements Encryptor {
-    @SuppressWarnings("WeakerAccess")
-    static final String NAME = "DefaultEncryptor";
+@Service(EncryptionService.NAME)
+public class EncryptionServiceImpl implements EncryptionService {
 
-    private final static Logger log = LoggerFactory.getLogger(EncryptorImpl.class);
+    private final static Logger log = LoggerFactory.getLogger(EncryptionServiceImpl.class);
 
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
@@ -35,7 +35,7 @@ public class EncryptorImpl implements Encryptor {
 
     @SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "CdiInjectionPointsInspection"})
     @Inject
-    public EncryptorImpl(EncryptionConfig encryptorConfig) {
+    public EncryptionServiceImpl(EncryptionConfig encryptorConfig) {
         this.encryptorConfig = encryptorConfig;
     }
 
@@ -55,7 +55,7 @@ public class EncryptorImpl implements Encryptor {
             iv = Base64.getDecoder().decode(encryptionIv);
         }
 
-        log.info("Encryptor has been initialised with key {} and init vector {}",
+        log.info("EncryptionService has been initialised with key {} and init vector {}",
                 encryptorConfig.getEncryptionKey(), encryptorConfig.getEncryptionIv()
         );
     }
@@ -77,10 +77,8 @@ public class EncryptorImpl implements Encryptor {
 
     private String saltedPassword(KeyStore keyStore) {
         String password = keyStore.getPassword();
-        String salt = keyStore.getLogin();
-        if (salt.length() > 16) {
-            salt = salt.substring(0, 16);
-        }
+        String salt = UUID.randomUUID().toString();
+        salt = salt.substring(0, 16);
         salt = StringUtils.rightPad(salt, 16);
         return salt + password;
     }

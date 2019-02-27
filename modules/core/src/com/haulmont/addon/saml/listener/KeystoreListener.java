@@ -1,6 +1,6 @@
 package com.haulmont.addon.saml.listener;
 
-import com.haulmont.addon.saml.crypto.Encryptor;
+import com.haulmont.addon.saml.crypto.EncryptionService;
 import com.haulmont.addon.saml.entity.KeyStore;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceTools;
@@ -13,12 +13,12 @@ import javax.inject.Inject;
 @Component
 public class KeystoreListener implements BeforeInsertEntityListener<KeyStore>, BeforeUpdateEntityListener<KeyStore> {
 
-    private final Encryptor encryptor;
+    private final EncryptionService encryptionService;
     private final PersistenceTools persistenceTools;
 
     @Inject
-    public KeystoreListener(Encryptor encryptor, PersistenceTools persistenceTools) {
-        this.encryptor = encryptor;
+    public KeystoreListener(EncryptionService encryptionService, PersistenceTools persistenceTools) {
+        this.encryptionService = encryptionService;
         this.persistenceTools = persistenceTools;
     }
 
@@ -35,7 +35,7 @@ public class KeystoreListener implements BeforeInsertEntityListener<KeyStore>, B
     }
 
     private void setEncryptedPassword(KeyStore entity) {
-        String encryptedPassword = encryptor.getEncryptedPassword(entity);
+        String encryptedPassword = encryptionService.getEncryptedPassword(entity);
         entity.setPassword(encryptedPassword);
     }
 }

@@ -15,6 +15,7 @@
             <map>
                 <entry key="samladdon_SamlService"
                        value="com.haulmont.addon.saml.service.SamlService"/>
+                <entry key="saml_EnctyptionService" value="com.haulmont.addon.saml.crypto.EncryptionService"/>
             </map>
         </property>
     </bean>

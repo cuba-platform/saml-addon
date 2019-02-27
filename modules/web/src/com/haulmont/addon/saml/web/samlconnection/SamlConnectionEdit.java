@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
@@ -91,8 +92,9 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     protected UploadField idpMetadataUploadField;
     @Inject
     protected Metadata metadata;
-    @Inject
-    private ComponentsFactory componentsFactory;
+
+    @Named("fieldGroup.keystore")
+    private PickerField keystoreField;
 
     @Override
     public void init(Map<String, Object> params) {

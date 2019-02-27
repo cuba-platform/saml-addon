@@ -4,12 +4,14 @@ import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+@Listeners("keystoreListener")
 @NamePattern("%s : %s|login,description")
 @Table(name = "SAMLADDON_KEY_STORE")
 @Entity(name = "samladdon$KeyStore")

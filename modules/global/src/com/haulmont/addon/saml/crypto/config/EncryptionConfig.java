@@ -1,4 +1,4 @@
-package com.haulmont.addon.saml.crypto;
+package com.haulmont.addon.saml.crypto.config;
 
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
