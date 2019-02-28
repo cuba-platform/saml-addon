@@ -111,7 +111,7 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
         writeLock.lock();
         try {
             List<SamlConnection> connections = dataManager.loadList(LoadContext.create(SamlConnection.class)
-                    .setQuery(new LoadContext.Query("select e from samladdon$SamlConnection e where e.active = true order by e.code"))
+                    .setQuery(new LoadContext.Query("select e from samladdon$SamlConnection e where e.active = true order by e.ssoPath"))
                     .setView("connection.activation"));
 
             if (!CollectionUtils.isEmpty(connections)) {
@@ -123,10 +123,10 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
                         metadataManager.add(connection);
                         success += 1;
 
-                        cache.put(connection.getId(), connection.getCode());
+                        cache.put(connection.getId(), connection.getSsoPath());
 
                     } catch (Exception e) {
-                        log.error(String.format("Failed to instantiate SAML connection '%s'", connection.getCode()), e);
+                        log.error(String.format("Failed to instantiate SAML connection '%s'", connection.getSsoPath()), e);
 
                         failed += 1;
                         if (update == null) {
@@ -196,7 +196,7 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
             //every fine - changes can be saved
             dataManager.commit(connection);
 
-            log.info("SAML connection '{}' successfully " + (connection.getActive() ? "activated" : "deactivated"), connection.getCode());
+            log.info("SAML connection '{}' successfully " + (connection.getActive() ? "activated" : "deactivated"), connection.getSsoPath());
         }
     }
 
@@ -221,7 +221,7 @@ public class SamlCommunicationServiceBean implements SamlCommunicationService {
             writeLock.lock();
             try {
                 if (Boolean.TRUE.equals(connection.getActive())) {
-                    cache.put(connection.getId(), connection.getCode());
+                    cache.put(connection.getId(), connection.getSsoPath());
                 } else {
                     cache.remove(connection.getId());
                 }

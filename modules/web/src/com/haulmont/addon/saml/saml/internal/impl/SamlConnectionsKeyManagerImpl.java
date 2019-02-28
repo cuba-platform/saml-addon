@@ -73,9 +73,9 @@ public class SamlConnectionsKeyManagerImpl extends EmptyKeyManager implements Ke
         final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         writeLock.lock();
         try {
-            cache.put(connection.getCode(), create(connection));
+            cache.put(connection.getSsoPath(), create(connection));
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to create key manager for SAML connection '%s'", connection.getCode()));
+            throw new RuntimeException(String.format("Failed to create key manager for SAML connection '%s'", connection.getSsoPath()));
         } finally {
             writeLock.unlock();
         }
@@ -88,7 +88,7 @@ public class SamlConnectionsKeyManagerImpl extends EmptyKeyManager implements Ke
         final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         writeLock.lock();
         try {
-            cache.remove(connection.getCode());
+            cache.remove(connection.getSsoPath());
         } finally {
             writeLock.unlock();
         }

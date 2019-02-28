@@ -292,11 +292,11 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     }
 
     protected boolean isCorrectCode(SamlConnection connection) {
-        if (StringUtils.isEmpty(connection.getCode())) {
+        if (StringUtils.isEmpty(connection.getSsoPath())) {
             return false;
         }
         Pattern pattern = Pattern.compile("[\\?\\s\\&]");
-        if (pattern.matcher(connection.getCode()).find()) {
+        if (pattern.matcher(connection.getSsoPath()).find()) {
             return false;
         }
         return true;
@@ -308,9 +308,9 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
 
     protected boolean isUnique(SamlConnection connection) {
         LoadContext<SamlConnection> context = LoadContext.create(SamlConnection.class)
-                .setQuery(LoadContext.createQuery("select e from samladdon$SamlConnection e where (e.spId = :spId or e.code = :code) and e.id <> :id")
+                .setQuery(LoadContext.createQuery("select e from samladdon$SamlConnection e where (e.spId = :spId or e.ssoPath = :ssoPath) and e.id <> :id")
                         .setParameter("spId", connection.getSpId())
-                        .setParameter("code", connection.getCode())
+                        .setParameter("ssoPath", connection.getSsoPath())
                         .setParameter("id", connection.getId())
                         .setMaxResults(1))
                 .setView(View.MINIMAL);

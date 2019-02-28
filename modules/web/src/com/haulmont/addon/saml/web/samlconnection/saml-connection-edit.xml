@@ -27,7 +27,7 @@
                 </column>
                 <column width="300px">
                     <field property="name"/>
-                    <field property="code"/>
+                    <field property="ssoPath"/>
                 </column>
                 <column width="300px">
                     <field property="defaultGroup"/>
@@ -38,13 +38,13 @@
                     </field>
                 </column>
                 <column width="300px">
-                    <field property="keystore" caption="msg://captions.keystore">
-                        <lookupPickerField
-                                datasource="samlConnectionDs"
-                                optionsDatasource="keystoresDs"
-                                property="keystore"
-                                required="true"
-                                caption="msg://captions.keystore">
+                    <field caption="msg://captions.keystore"
+                           property="keystore">
+                        <lookupPickerField caption="msg://captions.keystore"
+                                           datasource="samlConnectionDs"
+                                           optionsDatasource="keystoresDs"
+                                           property="keystore"
+                                           required="true">
                             <actions>
                                 <action id="create"
                                         icon="PLUS"

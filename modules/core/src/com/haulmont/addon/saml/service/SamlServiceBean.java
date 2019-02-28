@@ -106,8 +106,8 @@ public class SamlServiceBean implements SamlService {
     protected SamlConnection getConnection(SamlSession session) {
         EntityManager em = persistence.getEntityManager();
 
-        TypedQuery<SamlConnection> query = em.createQuery("select e from samladdon$SamlConnection e where e.code = :code", SamlConnection.class);
-        query.setParameter("code", session.getConnectionCode());
+        TypedQuery<SamlConnection> query = em.createQuery("select e from samladdon$SamlConnection e where e.ssoPath = :ssoPath", SamlConnection.class);
+        query.setParameter("ssoPath", session.getConnectionCode());
         query.setViewName("connection.userCreation");
 
         SamlConnection result = query.getFirstResult();

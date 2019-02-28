@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
 /**
  * @author adiatullin
  */
-@NamePattern("%s|name,code")
+@NamePattern("%s|name,ssoPath")
 @Table(name = "SAMLADDON_SAML_CONNECTION")
 @Entity(name = "samladdon$SamlConnection")
 public class SamlConnection extends StandardEntity {
@@ -46,9 +46,10 @@ public class SamlConnection extends StandardEntity {
     @Column(name = "CREATE_USERS")
     protected Boolean createUsers = true;
 
+
     @NotNull
-    @Column(name = "CODE", nullable = false, length = 100)
-    private String code;
+    @Column(name = "SSO_PATH", nullable = false, length = 100)
+    protected String ssoPath;
 
     @NotNull
     @Column(name = "SP_ID", nullable = false)
@@ -82,6 +83,15 @@ public class SamlConnection extends StandardEntity {
     @JoinColumn(name = "KEYSTORE_ID")
     protected KeyStore keystore;
 
+    public void setSsoPath(String ssoPath) {
+        this.ssoPath = ssoPath;
+    }
+
+    public String getSsoPath() {
+        return ssoPath;
+    }
+
+
     public void setKeystore(KeyStore keystore) {
         this.keystore = keystore;
     }
@@ -107,13 +117,7 @@ public class SamlConnection extends StandardEntity {
         this.name = name;
     }
 
-    public String getCode() {
-        return code;
-    }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
 
     public Boolean getActive() {
         return active;

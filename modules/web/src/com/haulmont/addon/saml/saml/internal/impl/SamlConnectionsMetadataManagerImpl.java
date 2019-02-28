@@ -166,7 +166,7 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
         Preconditions.checkNotNullArgument(connection, "SAML connection is empty");
         remove(connection);
 
-        SamlConnectionMetadataProvider spProvider = generateSpProvider(connection, connectionsKeyManager.getKeyManager(connection.getCode()));
+        SamlConnectionMetadataProvider spProvider = generateSpProvider(connection, connectionsKeyManager.getKeyManager(connection.getSsoPath()));
         super.addMetadataProvider(spProvider);
         SamlConnectionMetadataProvider idpProvider = generateIdpProvider(connection);
         super.addMetadataProvider(idpProvider);
@@ -187,7 +187,7 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
 
         MetadataMemoryProvider memoryProvider = new MetadataMemoryProvider(descriptor);
         //memoryProvider.initialize();
-        return new SamlConnectionExtendedMetadataDelegate(memoryProvider, extendedMetadata, connection.getCode(), true);
+        return new SamlConnectionExtendedMetadataDelegate(memoryProvider, extendedMetadata, connection.getSsoPath(), true);
     }
 
     protected SamlConnectionMetadataProvider generateIdpProvider(SamlConnection connection) throws MetadataProviderException {
@@ -210,14 +210,14 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
             throw new DevelopmentException(String.format("IDP metadata not specified in SAML connection %s", connection.getName()));
         }
         // provider.initialize();
-        return new SamlConnectionExtendedMetadataDelegate(provider, connection.getCode(), false);
+        return new SamlConnectionExtendedMetadataDelegate(provider, connection.getSsoPath(), false);
     }
 
     @Override
     public void remove(SamlConnection connection) {
         Preconditions.checkNotNullArgument(connection, "SAML connection is empty");
 
-        SamlConnectionMetadataProvider spProvider = getProvider(connection.getCode(), true);
+        SamlConnectionMetadataProvider spProvider = getProvider(connection.getSsoPath(), true);
         if (spProvider != null) {
             super.removeMetadataProvider(spProvider);
             try {
@@ -226,7 +226,7 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
                 log.error("Failed to destroy SP metadata provider", e);
             }
         }
-        SamlConnectionMetadataProvider idpProvider = getProvider(connection.getCode(), false);
+        SamlConnectionMetadataProvider idpProvider = getProvider(connection.getSsoPath(), false);
         if (idpProvider != null) {
             super.removeMetadataProvider(idpProvider);
             try {
