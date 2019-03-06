@@ -36,7 +36,7 @@
                 <column id="active"/>
                 <column id="createUsers"/>
                 <column id="name"/>
-                <column id="code"/>
+                <column id="ssoPath"/>
                 <column id="spId"/>
                 <column id="idpMetadataUrl"/>
                 <column id="idpMetadata.name"
@@ -57,7 +57,9 @@
                 <button id="removeBtn"
                         action="samlConnectionsTable.remove"/>
                 <button id="keystoreBrowserBtn"
-                        invoke="openKeyStoreBrowser" icon="KEY" caption="msg://captions.keystore"/>
+                        caption="msg://captions.keystore"
+                        icon="KEY"
+                        invoke="openKeyStoreBrowser"/>
             </buttonsPanel>
         </groupTable>
     </layout>
