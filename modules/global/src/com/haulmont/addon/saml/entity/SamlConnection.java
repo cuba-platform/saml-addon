@@ -20,6 +20,8 @@ import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Lookup;
+import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -31,7 +33,7 @@ import javax.validation.constraints.NotNull;
 /**
  * @author adiatullin
  */
-@NamePattern("%s|name,code")
+@NamePattern("%s|name,ssoPath")
 @Table(name = "SAMLADDON_SAML_CONNECTION")
 @Entity(name = "samladdon$SamlConnection")
 public class SamlConnection extends StandardEntity {
@@ -44,9 +46,10 @@ public class SamlConnection extends StandardEntity {
     @Column(name = "CREATE_USERS")
     protected Boolean createUsers = true;
 
+
     @NotNull
-    @Column(name = "CODE", nullable = false, length = 100)
-    private String code;
+    @Column(name = "SSO_PATH", nullable = false, length = 100)
+    protected String ssoPath;
 
     @NotNull
     @Column(name = "SP_ID", nullable = false)
@@ -54,18 +57,6 @@ public class SamlConnection extends StandardEntity {
 
     @Column(name = "ACTIVE")
     private Boolean active = false;
-
-    @Composition
-    @OnDelete(DeletePolicy.CASCADE)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "KEYSTORE_ID")
-    private FileDescriptor keystore;
-
-    @Column(name = "KEYSTORE_LOGIN")
-    private String keystoreLogin;
-
-    @Column(name = "KEYSTORE_PASSWORD")
-    private String keystorePassword;
 
     @Column(name = "IDP_METADATA_URL")
     private String idpMetadataUrl;
@@ -87,6 +78,28 @@ public class SamlConnection extends StandardEntity {
     private String processingService;
 
 
+    @Lookup(type = LookupType.DROPDOWN)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "KEYSTORE_ID")
+    protected KeyStore keystore;
+
+    public void setSsoPath(String ssoPath) {
+        this.ssoPath = ssoPath;
+    }
+
+    public String getSsoPath() {
+        return ssoPath;
+    }
+
+
+    public void setKeystore(KeyStore keystore) {
+        this.keystore = keystore;
+    }
+
+    public KeyStore getKeystore() {
+        return keystore;
+    }
+
     public void setCreateUsers(Boolean createUsers) {
         this.createUsers = createUsers;
     }
@@ -104,13 +117,7 @@ public class SamlConnection extends StandardEntity {
         this.name = name;
     }
 
-    public String getCode() {
-        return code;
-    }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
 
     public Boolean getActive() {
         return active;
@@ -126,30 +133,6 @@ public class SamlConnection extends StandardEntity {
 
     public void setSpId(String spId) {
         this.spId = spId;
-    }
-
-    public FileDescriptor getKeystore() {
-        return keystore;
-    }
-
-    public void setKeystore(FileDescriptor keystore) {
-        this.keystore = keystore;
-    }
-
-    public String getKeystoreLogin() {
-        return keystoreLogin;
-    }
-
-    public void setKeystoreLogin(String keystoreLogin) {
-        this.keystoreLogin = keystoreLogin;
-    }
-
-    public String getKeystorePassword() {
-        return keystorePassword;
-    }
-
-    public void setKeystorePassword(String keystorePassword) {
-        this.keystorePassword = keystorePassword;
     }
 
     public String getIdpMetadataUrl() {

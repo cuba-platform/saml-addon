@@ -16,6 +16,7 @@
 
 package com.haulmont.addon.saml.saml.internal.impl;
 
+import com.haulmont.addon.saml.crypto.EncryptionService;
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.saml.internal.SamlConnectionsKeyManager;
 import com.haulmont.addon.saml.web.security.saml.SamlCommunicationServiceBean;
@@ -54,6 +55,8 @@ public class SamlConnectionsKeyManagerImpl extends EmptyKeyManager implements Ke
     protected TrustedClientService trustedClientService;
     @Inject
     protected SamlCommunicationServiceBean samlCommunicationService;
+    @Inject
+    protected EncryptionService encryptionService;
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     protected Map<String, KeyManager> cache = new HashMap<>();
@@ -70,9 +73,9 @@ public class SamlConnectionsKeyManagerImpl extends EmptyKeyManager implements Ke
         final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         writeLock.lock();
         try {
-            cache.put(connection.getCode(), create(connection));
+            cache.put(connection.getSsoPath(), create(connection));
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Failed to create key manager for SAML connection '%s'", connection.getCode()));
+            throw new RuntimeException(String.format("Failed to create key manager for SAML connection '%s'", connection.getSsoPath()));
         } finally {
             writeLock.unlock();
         }
@@ -85,22 +88,22 @@ public class SamlConnectionsKeyManagerImpl extends EmptyKeyManager implements Ke
         final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         writeLock.lock();
         try {
-            cache.remove(connection.getCode());
+            cache.remove(connection.getSsoPath());
         } finally {
             writeLock.unlock();
         }
     }
 
     protected KeyManager create(SamlConnection connection) {
-        FileDescriptor fd = connection.getKeystore();
+        FileDescriptor fd = connection.getKeystore().getKey();
         if (fd == null) {
             return new EmptyKeyManager();
         }
 
         Resource keystoreResource = new ByteArrayResource(loadFile(fd));
         Map<String, String> passwords = new HashMap<>();
-        passwords.put(connection.getKeystoreLogin(), connection.getKeystorePassword());
-        String defaultKey = connection.getKeystoreLogin();
+        passwords.put(connection.getKeystore().getLogin(), encryptionService.getPlainPassword(connection.getKeystore()));
+        String defaultKey = connection.getKeystore().getLogin();
 
         return new JKSKeyManager(keystoreResource, null, passwords, defaultKey);
     }

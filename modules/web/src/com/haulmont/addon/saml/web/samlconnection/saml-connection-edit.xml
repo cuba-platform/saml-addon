@@ -8,32 +8,26 @@
     <dsContext>
         <datasource id="samlConnectionDs"
                     class="com.haulmont.addon.saml.entity.SamlConnection"
-                    view="connection.edit">
-            <datasource id="keystoreDs"
-                        property="keystore"/>
-        </datasource>
+                    view="connection.edit"/>
+        <collectionDatasource id="keystoresDs"
+                              class="com.haulmont.addon.saml.entity.KeyStore"
+                              view="keyStore-view-edit"/>
     </dsContext>
-    <dialogMode height="600"
-                width="800"/>
+    <dialogMode width="AUTO"/>
     <layout expand="metadataSplit"
             spacing="true">
         <groupBox caption="msg://captions.general"
                   collapsable="true">
             <fieldGroup id="fieldGroup"
                         datasource="samlConnectionDs">
-                <column width="300px">
-                    <field property="name"/>
-                    <field property="code"/>
+                <column width="30px">
                     <field property="active"/>
-                    <field caption="msg://captions.createUsers" property="createUsers"/>
+                    <field caption="msg://captions.createUsers"
+                           property="createUsers"/>
                 </column>
                 <column width="300px">
-                    <field property="keystoreLogin"/>
-                    <field property="keystorePassword">
-                        <passwordField datasource="samlConnectionDs"
-                                       property="keystorePassword"/>
-                    </field>
-                    <field property="keystore"/>
+                    <field property="name"/>
+                    <field property="ssoPath"/>
                 </column>
                 <column width="300px">
                     <field property="defaultGroup"/>
@@ -41,6 +35,25 @@
                         <lookupField id="processingServiceField"
                                      datasource="samlConnectionDs"
                                      property="processingService"/>
+                    </field>
+                </column>
+                <column width="300px">
+                    <field caption="msg://captions.keystore"
+                           property="keystore">
+                        <lookupPickerField caption="msg://captions.keystore"
+                                           datasource="samlConnectionDs"
+                                           optionsDatasource="keystoresDs"
+                                           property="keystore"
+                                           required="true">
+                            <actions>
+                                <action id="create"
+                                        icon="PLUS"
+                                        invoke="createKeystorePickerFieldAction"
+                                        openType="DIALOG"/>
+                                <action id="open"
+                                        openType="DIALOG"/>
+                            </actions>
+                        </lookupPickerField>
                     </field>
                 </column>
             </fieldGroup>

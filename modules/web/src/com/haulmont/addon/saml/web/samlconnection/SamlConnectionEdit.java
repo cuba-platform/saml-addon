@@ -16,25 +16,30 @@
 
 package com.haulmont.addon.saml.web.samlconnection;
 
+import com.haulmont.addon.saml.entity.KeyStore;
+import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.service.SamlService;
 import com.haulmont.addon.saml.web.security.saml.SamlCommunicationService;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,6 +65,8 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
 
     @Inject
     protected Datasource<SamlConnection> samlConnectionDs;
+    @Inject
+    private Datasource<KeyStore> keystoresDs;
 
     @Inject
     protected SourceCodeEditor idpMetadataView;
@@ -83,6 +90,11 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     protected TextField idpMetadataUrlField;
     @Inject
     protected UploadField idpMetadataUploadField;
+    @Inject
+    protected Metadata metadata;
+
+    @Named("fieldGroup.keystore")
+    private PickerField keystoreField;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -280,11 +292,11 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     }
 
     protected boolean isCorrectCode(SamlConnection connection) {
-        if (StringUtils.isEmpty(connection.getCode())) {
+        if (StringUtils.isEmpty(connection.getSsoPath())) {
             return false;
         }
         Pattern pattern = Pattern.compile("[\\?\\s\\&]");
-        if (pattern.matcher(connection.getCode()).find()) {
+        if (pattern.matcher(connection.getSsoPath()).find()) {
             return false;
         }
         return true;
@@ -296,9 +308,9 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
 
     protected boolean isUnique(SamlConnection connection) {
         LoadContext<SamlConnection> context = LoadContext.create(SamlConnection.class)
-                .setQuery(LoadContext.createQuery("select e from samladdon$SamlConnection e where (e.spId = :spId or e.code = :code) and e.id <> :id")
+                .setQuery(LoadContext.createQuery("select e from samladdon$SamlConnection e where (e.spId = :spId or e.ssoPath = :ssoPath) and e.id <> :id")
                         .setParameter("spId", connection.getSpId())
-                        .setParameter("code", connection.getCode())
+                        .setParameter("ssoPath", connection.getSsoPath())
                         .setParameter("id", connection.getId())
                         .setMaxResults(1))
                 .setView(View.MINIMAL);
@@ -329,5 +341,16 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
         public String getError() {
             return error;
         }
+    }
+
+    public void createKeystorePickerFieldAction() {
+        KeyStore keyStore = metadata.create(KeyStore.class);
+        AbstractEditor editor = openEditor(
+                "samladdon$KeyStore.edit",
+                keyStore,
+                WindowManager.OpenType.DIALOG
+        );
+        //update list of entities in dropdown
+        editor.addCloseListener(actionId -> keystoresDs.refresh());
     }
 }

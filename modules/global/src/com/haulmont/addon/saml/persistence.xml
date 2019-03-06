@@ -4,5 +4,6 @@
     <persistence-unit name="saml-addon"
                       transaction-type="RESOURCE_LOCAL">
         <class>com.haulmont.addon.saml.entity.SamlConnection</class>
+        <class>com.haulmont.addon.saml.entity.KeyStore</class>
     </persistence-unit>
 </persistence>
