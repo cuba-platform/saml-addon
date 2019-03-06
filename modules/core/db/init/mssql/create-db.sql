@@ -11,7 +11,7 @@ create table SAMLADDON_SAML_CONNECTION (
     DELETED_BY varchar(50),
     --
      NAME varchar(255) not null,
-     CODE varchar(100) not null,
+     SSO_PATH varchar(100) not null,
      SP_ID varchar(255) not null,
      ACTIVE tinyint default 0,
      CREATE_USERS tinyint default 1,

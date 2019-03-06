@@ -11,7 +11,7 @@ create table SAMLADDON_SAML_CONNECTION (
     --
     NAME varchar(255) not null,
     CREATE_USERS boolean,
-    CODE varchar(100) not null,
+    SSO_PATH varchar(100) not null,
     SP_ID varchar(255) not null,
     ACTIVE boolean,
     IDP_METADATA_URL varchar(255),
@@ -23,7 +23,6 @@ create table SAMLADDON_SAML_CONNECTION (
     primary key (ID)
 )^
 -- end SAMLADDON_SAML_CONNECTION
-
 -- begin SAMLADDON_KEY_STORE
 create table SAMLADDON_KEY_STORE (
     ID varchar(36) not null,
@@ -52,9 +51,7 @@ create index IDX_SAMLADDON_SAML_CONNECTION_ON_IDP_METADATA on SAMLADDON_SAML_CON
 create index IDX_SAMLADDON_SAML_CONNECTION_ON_DEFAULT_GROUP on SAMLADDON_SAML_CONNECTION (DEFAULT_GROUP_ID)^
 create index IDX_SAMLADDON_SAML_CONNECTION_ON_KEYSTORE on SAMLADDON_SAML_CONNECTION (KEYSTORE_ID)^
 -- end SAMLADDON_SAML_CONNECTION
-
 -- begin SAMLADDON_KEY_STORE
 alter table SAMLADDON_KEY_STORE add constraint FK_SAMLADDON_KEY_STORE_ON_KEY foreign key (KEY_ID) references SYS_FILE(ID)^
 create index IDX_SAMLADDON_KEY_STORE_ON_KEY on SAMLADDON_KEY_STORE (KEY_ID)^
 -- end SAMLADDON_KEY_STORE
-----------------------------------------------------------------------------------------------------------------
