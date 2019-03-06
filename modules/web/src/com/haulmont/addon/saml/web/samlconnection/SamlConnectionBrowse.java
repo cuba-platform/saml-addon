@@ -144,6 +144,6 @@ public class SamlConnectionBrowse extends AbstractLookup {
     }
 
     public void openKeyStoreBrowser() {
-        openWindow("samladdon$KeyStore.browse", WindowManager.OpenType.DIALOG);
+        openWindow("samladdon$KeyStore.browse", WindowManager.OpenType.NEW_TAB);
     }
 }
