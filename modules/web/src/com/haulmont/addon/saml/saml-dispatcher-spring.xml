@@ -137,8 +137,8 @@
     </bean>
 
     <!-- Class loading incoming SAML messages from httpRequest stream -->
-    <bean id="processor" class="org.springframework.security.saml.processor.SAMLProcessorImpl">
-        <constructor-arg>
+    <bean id="processor" class="com.haulmont.addon.saml.saml.internal.impl.SamlConnectionProcessorImpl">
+        <property name="bindings">
             <list>
                 <ref bean="redirectBinding"/>
                 <ref bean="postBinding"/>
@@ -146,7 +146,7 @@
                 <ref bean="soapBinding"/>
                 <ref bean="paosBinding"/>
             </list>
-        </constructor-arg>
+        </property>
     </bean>
 
     <!-- SAML 2.0 WebSSO Assertion Consumer -->
@@ -194,11 +194,7 @@
                         </constructor-arg>
                     </bean>
                 </constructor-arg>
-                <property name="processor">
-                    <bean class="org.springframework.security.saml.processor.SAMLProcessorImpl">
-                        <constructor-arg ref="soapBinding"/>
-                    </bean>
-                </property>
+                <property name="processor" ref="processor"/>
             </bean>
         </constructor-arg>
     </bean>
