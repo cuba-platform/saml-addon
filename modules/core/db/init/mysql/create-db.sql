@@ -16,6 +16,7 @@ create table SAMLADDON_SAML_CONNECTION (
     CREATE_USERS boolean default true,
     IDP_METADATA_URL varchar(255),
     IDP_METADATA_ID varchar(32),
+    METADATA_TRUST_CHECK boolean default true,
     DEFAULT_GROUP_ID varchar(32) not null,
     PROCESSING_SERVICE varchar(255) not null,
     KEYSTORE_ID varchar(36),

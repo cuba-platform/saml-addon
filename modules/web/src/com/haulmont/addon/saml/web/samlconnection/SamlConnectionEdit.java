@@ -225,6 +225,13 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
     }
 
     @Override
+    protected void initNewItem(SamlConnection item) {
+        super.initNewItem(item);
+
+        item.setMetadataTrustCheck(Boolean.TRUE);
+    }
+
+    @Override
     protected void postInit() {
         super.postInit();
 

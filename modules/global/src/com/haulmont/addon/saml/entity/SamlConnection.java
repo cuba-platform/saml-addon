@@ -67,6 +67,9 @@ public class SamlConnection extends StandardEntity {
     @JoinColumn(name = "IDP_METADATA_ID")
     private FileDescriptor idpMetadata;
 
+    @Column(name = "METADATA_TRUST_CHECK")
+    private Boolean metadataTrustCheck = true;
+
     @NotNull
     @OnDeleteInverse(DeletePolicy.DENY)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -149,6 +152,14 @@ public class SamlConnection extends StandardEntity {
 
     public void setIdpMetadata(FileDescriptor idpMetadata) {
         this.idpMetadata = idpMetadata;
+    }
+
+    public Boolean getMetadataTrustCheck() {
+        return metadataTrustCheck;
+    }
+
+    public void setMetadataTrustCheck(Boolean metadataTrustCheck) {
+        this.metadataTrustCheck = metadataTrustCheck;
     }
 
     public Group getDefaultGroup() {

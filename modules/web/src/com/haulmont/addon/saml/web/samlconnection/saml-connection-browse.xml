@@ -41,6 +41,7 @@
                 <column id="idpMetadataUrl"/>
                 <column id="idpMetadata.name"
                         caption="msg://com.haulmont.addon.saml.entity/SamlConnection.idpMetadata"/>
+                <column id="metadataTrustCheck"/>
                 <column id="defaultGroup"/>
                 <column id="processingService"/>
             </columns>

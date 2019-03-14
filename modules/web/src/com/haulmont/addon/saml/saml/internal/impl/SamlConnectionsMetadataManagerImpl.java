@@ -187,7 +187,8 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
 
         MetadataMemoryProvider memoryProvider = new MetadataMemoryProvider(descriptor);
         //memoryProvider.initialize();
-        return new SamlConnectionExtendedMetadataDelegate(memoryProvider, extendedMetadata, connection.getSsoPath(), true);
+        return new SamlConnectionExtendedMetadataDelegate(memoryProvider, extendedMetadata, connection.getSsoPath(), true,
+                connection.getMetadataTrustCheck());
     }
 
     protected SamlConnectionMetadataProvider generateIdpProvider(SamlConnection connection) throws MetadataProviderException {
@@ -210,7 +211,8 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
             throw new DevelopmentException(String.format("IDP metadata not specified in SAML connection %s", connection.getName()));
         }
         // provider.initialize();
-        return new SamlConnectionExtendedMetadataDelegate(provider, connection.getSsoPath(), false);
+        return new SamlConnectionExtendedMetadataDelegate(provider, connection.getSsoPath(), false,
+                connection.getMetadataTrustCheck());
     }
 
     @Override

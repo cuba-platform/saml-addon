@@ -121,6 +121,9 @@
                                   editable="false"
                                   mode="XML"
                                   width="100%"/>
+                <checkBox caption="msg://com.haulmont.addon.saml.entity/SamlConnection.metadataTrustCheck"
+                          datasource="samlConnectionDs"
+                          property="metadataTrustCheck"/>
             </vbox>
         </split>
         <frame id="windowActions"

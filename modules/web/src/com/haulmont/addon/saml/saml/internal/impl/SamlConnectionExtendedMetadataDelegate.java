@@ -29,34 +29,44 @@ import java.util.Map;
  * @author adiatullin
  */
 public class SamlConnectionExtendedMetadataDelegate extends ExtendedMetadataDelegate implements SamlConnectionMetadataProvider {
+
     protected final String connectionCode;
     protected final boolean sp;
 
-    public SamlConnectionExtendedMetadataDelegate(MetadataProvider delegate, String connectionCode, boolean sp) {
+    public SamlConnectionExtendedMetadataDelegate(MetadataProvider delegate, String connectionCode, boolean sp, boolean metadataTrustCheck) {
         super(delegate);
         this.connectionCode = connectionCode;
         this.sp = sp;
+
+        setMetadataTrustCheck(metadataTrustCheck);
     }
 
     public SamlConnectionExtendedMetadataDelegate(MetadataProvider delegate, ExtendedMetadata defaultMetadata,
-                                                  String connectionCode, boolean sp) {
+                                                  String connectionCode, boolean sp, boolean metadataTrustCheck) {
         super(delegate, defaultMetadata);
         this.connectionCode = connectionCode;
         this.sp = sp;
+
+        setMetadataTrustCheck(metadataTrustCheck);
     }
 
     public SamlConnectionExtendedMetadataDelegate(MetadataProvider delegate, Map<String, ExtendedMetadata> extendedMetadataMap,
-                                                  String connectionCode, boolean sp) {
+                                                  String connectionCode, boolean sp,  boolean metadataTrustCheck) {
         super(delegate, extendedMetadataMap);
         this.connectionCode = connectionCode;
         this.sp = sp;
+
+        setMetadataTrustCheck(metadataTrustCheck);
     }
 
     public SamlConnectionExtendedMetadataDelegate(MetadataProvider delegate, ExtendedMetadata defaultMetadata,
-                                                  Map<String, ExtendedMetadata> extendedMetadataMap, String connectionCode, boolean sp) {
+                                                  Map<String, ExtendedMetadata> extendedMetadataMap, String connectionCode, boolean sp,
+                                                  boolean metadataTrustCheck) {
         super(delegate, defaultMetadata, extendedMetadataMap);
         this.connectionCode = connectionCode;
         this.sp = sp;
+
+        setMetadataTrustCheck(metadataTrustCheck);
     }
 
     @Override
