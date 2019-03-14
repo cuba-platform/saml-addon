@@ -19,7 +19,6 @@ package com.haulmont.addon.saml.saml.internal.impl;
 import org.springframework.security.saml.processor.SAMLBinding;
 import org.springframework.security.saml.processor.SAMLProcessorImpl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -45,6 +44,6 @@ public class SamlConnectionProcessorImpl extends SAMLProcessorImpl {
      * @param bindings collections
      */
     public void setBindings(Collection<SAMLBinding> bindings) {
-        this.bindings = bindings == null ? Collections.emptyList() : new ArrayList<>(bindings);
+        this.bindings = bindings == null ? Collections.emptyList() : Collections.unmodifiableCollection(bindings);
     }
 }
