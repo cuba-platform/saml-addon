@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.addon.saml.web.samlconnection;
@@ -32,7 +33,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -113,7 +113,9 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
                 spMetadataRefreshBtn.setEnabled(false);
 
                 final SamlConnection item = getItem();
-                BackgroundTask<Integer, MetadataResult> task = new BackgroundTask<Integer, MetadataResult>(getBackgroundTaskTimeout(), SamlConnectionEdit.this) {
+                BackgroundTask<Integer, MetadataResult> task = new BackgroundTask<Integer, MetadataResult>(
+                        getBackgroundTaskTimeout(),
+                        SamlConnectionEdit.this) {
                     @Override
                     public MetadataResult run(TaskLifeCycle<Integer> taskLifeCycle) {
                         String metadata = null;
@@ -159,7 +161,9 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
                 idpMetadataRefreshBtn.setEnabled(false);
 
                 final SamlConnection item = getItem();
-                BackgroundTask<Integer, MetadataResult> task = new BackgroundTask<Integer, MetadataResult>(getBackgroundTaskTimeout(), SamlConnectionEdit.this) {
+                BackgroundTask<Integer, MetadataResult> task = new BackgroundTask<Integer, MetadataResult>(
+                        getBackgroundTaskTimeout(),
+                        SamlConnectionEdit.this) {
                     @Override
                     public MetadataResult run(TaskLifeCycle<Integer> taskLifeCycle) {
                         String metadata = null;
@@ -315,7 +319,9 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
 
     protected boolean isUnique(SamlConnection connection) {
         LoadContext<SamlConnection> context = LoadContext.create(SamlConnection.class)
-                .setQuery(LoadContext.createQuery("select e from samladdon$SamlConnection e where (e.spId = :spId or e.ssoPath = :ssoPath) and e.id <> :id")
+                .setQuery(LoadContext.createQuery(
+                        "select e from samladdon$SamlConnection e where "
+                                + "(e.spId = :spId or e.ssoPath = :ssoPath) and e.id <> :id")
                         .setParameter("spId", connection.getSpId())
                         .setParameter("ssoPath", connection.getSsoPath())
                         .setParameter("id", connection.getId())

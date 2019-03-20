@@ -1,1 +1,0 @@
-alter table SAMLADDON_SAML_CONNECTION MODIFY column IDP_METADATA_URL varchar(255) null;

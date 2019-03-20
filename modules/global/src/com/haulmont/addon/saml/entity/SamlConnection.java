@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.addon.saml.entity;
@@ -46,7 +47,6 @@ public class SamlConnection extends StandardEntity {
     @Column(name = "CREATE_USERS")
     protected Boolean createUsers = true;
 
-
     @NotNull
     @Column(name = "SSO_PATH", nullable = false, length = 100)
     protected String ssoPath;
@@ -80,8 +80,8 @@ public class SamlConnection extends StandardEntity {
     @Column(name = "PROCESSING_SERVICE", nullable = false)
     private String processingService;
 
-
     @Lookup(type = LookupType.DROPDOWN)
+    @OnDeleteInverse(DeletePolicy.DENY)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "KEYSTORE_ID")
     protected KeyStore keystore;
@@ -93,7 +93,6 @@ public class SamlConnection extends StandardEntity {
     public String getSsoPath() {
         return ssoPath;
     }
-
 
     public void setKeystore(KeyStore keystore) {
         this.keystore = keystore;
@@ -111,7 +110,6 @@ public class SamlConnection extends StandardEntity {
         return createUsers;
     }
 
-
     public String getName() {
         return name;
     }
@@ -119,8 +117,6 @@ public class SamlConnection extends StandardEntity {
     public void setName(String name) {
         this.name = name;
     }
-
-
 
     public Boolean getActive() {
         return active;

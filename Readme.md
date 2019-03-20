@@ -27,9 +27,9 @@ To install the component in your project, do the following steps:
 
 4. Paste the add-on coordinates in the corresponding field as follows: `group:name:version`.
 
-  - Artifact group: `com.haulmont.addon.saml`;
-  - Artifact name: `saml-global`;
-  - Version: `add-on version`.
+  - Artifact group: `com.haulmont.addon.saml`
+  - Artifact name: `saml-global`
+  - Version: `add-on version`
 
 Specify the add-on version compatible with the used version of the CUBA platform.
 
