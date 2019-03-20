@@ -26,6 +26,7 @@ import java.util.Objects;
  * @author kuchmin
  */
 public class SamlSession implements Serializable {
+
     private static final long serialVersionUID = -5496173942765972842L;
 
     protected String principal;
@@ -55,7 +56,6 @@ public class SamlSession implements Serializable {
     public void setConnectionCode(String connectionCode) {
         this.connectionCode = connectionCode;
     }
-
 
     @Override
     public boolean equals(Object o) {
