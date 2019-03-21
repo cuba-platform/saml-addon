@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.addon.saml.saml.internal.impl;
@@ -73,6 +74,7 @@ import java.net.URL;
  * @author adiatullin
  */
 public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
+
     private static final Logger log = LoggerFactory.getLogger(SamlConnectionContextProviderImpl.class);
 
     // Way to obtain encrypted key info from XML Encryption
@@ -159,7 +161,9 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
     }
 
     @Override
-    protected void populateGenericContext(HttpServletRequest request, HttpServletResponse response, SAMLMessageContext context) throws MetadataProviderException {
+    protected void populateGenericContext(HttpServletRequest request,
+                                          HttpServletResponse response,
+                                          SAMLMessageContext context) throws MetadataProviderException {
         if (samlCommunicationServiceBean.isProxyEnabled()) {
             request = new ProxyRequestWrapper(request, samlCommunicationServiceBean.getProxyServerUrl());
         }
@@ -317,9 +321,14 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
     protected void populateTrustEngine(SAMLMessageContext samlContext) {
         SignatureTrustEngine engine;
         if ("pkix".equalsIgnoreCase(samlContext.getLocalExtendedMetadata().getSecurityProfile())) {
-            engine = new PKIXSignatureTrustEngine(getInformationResolver(samlContext), Configuration.getGlobalSecurityConfiguration().getDefaultKeyInfoCredentialResolver(), pkixTrustEvaluator, new BasicX509CredentialNameEvaluator());
+            engine = new PKIXSignatureTrustEngine(
+                    getInformationResolver(samlContext),
+                    Configuration.getGlobalSecurityConfiguration().getDefaultKeyInfoCredentialResolver(),
+                    pkixTrustEvaluator, new BasicX509CredentialNameEvaluator());
         } else {
-            engine = new ExplicitKeySignatureTrustEngine(getMetadataResolver(samlContext), Configuration.getGlobalSecurityConfiguration().getDefaultKeyInfoCredentialResolver());
+            engine = new ExplicitKeySignatureTrustEngine(
+                    getMetadataResolver(samlContext),
+                    Configuration.getGlobalSecurityConfiguration().getDefaultKeyInfoCredentialResolver());
         }
         samlContext.setLocalTrustEngine(engine);
     }
@@ -335,7 +344,10 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
     protected void populateSSLTrustEngine(SAMLMessageContext samlContext) {
         TrustEngine<X509Credential> engine;
         if ("pkix".equalsIgnoreCase(samlContext.getLocalExtendedMetadata().getSslSecurityProfile())) {
-            engine = new PKIXX509CredentialTrustEngine(getInformationResolver(samlContext), pkixTrustEvaluator, new BasicX509CredentialNameEvaluator());
+            engine = new PKIXX509CredentialTrustEngine(
+                    getInformationResolver(samlContext),
+                    pkixTrustEvaluator,
+                    new BasicX509CredentialNameEvaluator());
         } else {
             engine = new ExplicitX509CertificateTrustEngine(getMetadataResolver(samlContext));
         }
@@ -345,7 +357,10 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
     protected PKIXValidationInformationResolver getInformationResolver(SAMLMessageContext samlContext) {
         PKIXValidationInformationResolver resolver = pkixResolver;
         if (resolver == null) {
-            resolver = new PKIXInformationResolver(getMetadataResolver(samlContext), (MetadataManager) connectionsMetadataManager, getKeyManager(samlContext));
+            resolver = new PKIXInformationResolver(
+                    getMetadataResolver(samlContext),
+                    (MetadataManager) connectionsMetadataManager,
+                    getKeyManager(samlContext));
         }
         return resolver;
     }
@@ -353,7 +368,9 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
     protected MetadataCredentialResolver getMetadataResolver(SAMLMessageContext samlContext) {
         MetadataCredentialResolver resolver = metadataResolver;
         if (resolver == null) {
-            resolver = new org.springframework.security.saml.trust.MetadataCredentialResolver((MetadataManager) connectionsMetadataManager, getKeyManager(samlContext));
+            resolver = new org.springframework.security.saml.trust.MetadataCredentialResolver(
+                    (MetadataManager) connectionsMetadataManager,
+                    getKeyManager(samlContext));
             resolver.setMeetAllCriteria(false);
             resolver.setUnevaluableSatisfies(true);
         }

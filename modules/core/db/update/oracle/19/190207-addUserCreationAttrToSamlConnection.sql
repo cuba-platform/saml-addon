@@ -1,1 +1,0 @@
-alter table SAMLADDON_SAML_CONNECTION add CREATE_USERS char(1),;

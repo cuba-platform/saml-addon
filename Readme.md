@@ -1,22 +1,52 @@
-# Overview
+[![license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
+
+- [1. Overview](#overview)
+- [2. Installation](#installation)
+- [3. Configuration](#configuration)
+  - [3.1. Keystore](#keystore)
+    - [3.1.1 Keystore Creation](#keystore-create)
+  - [3.2. SAML Connection](#saml-connection)
+    - [3.2.1 Tenant login](#tenant-login)
+    - [3.2.2 SAML Processor](#saml-processor)
+- [4. Implementation](#implementation)
+- [5. General Application Properties](#general-properties)
+
+# 1. Overview
 
 The purpose of the SAML Integration CUBA component is to provide a readily available instrument of authentication via a SAML Identity Provider service in any CUBA-based application.
 
-# Getting Started
+# 2. Installation <a name="installation"></a>
 
-## Installing SAML Add-on
+To install the component in your project, do the following steps:
 
+1. Open your application in CUBA Studio.
+
+2. Open **Project -> Properties** in the project tree.
+
+3. On the **App components** pane click the **Plus** button next to **Custom components**.
+
+4. Paste the add-on coordinates in the corresponding field as follows: `group:name:version`.
+
+  - Artifact group: `com.haulmont.addon.saml`
+  - Artifact name: `saml-global`
+  - Version: `add-on version`
+
+Specify the add-on version compatible with the used version of the CUBA platform.
+
+| Platform Version | Add-on Version |
+|------------------|----------------|
+|7.0.x             | 0.1-SNAPSHOT   |
+|6.10.x            | 0.2-SNAPSHOT   |
+
+5. Click **OK** to save the project properties.
+
+After that the SAML SSO functions will be available.
+
+If you want use own key for keystore's passwords encryption. There are two properties must be specified `encryption.key` and `encryption.iv` in app.properties in Core module. Otherwise the default keys will be used. (encryption keys declared in app-component.xml)
+ 
 To use the add-on developer needs to install it to the their local repository. It is recommended to do it in Cuba Studio. To import the add-on click `Run` ->` Install app component`.
 
-## Referencing the SAML Add-on in a CUBA.platform App
-
-It is recommended to perform this operation in Cuba Studio. Open the project in Cuba Studio and go to editing its properties (`Project properties` ->` Edit`). Click `+` located next to the caption `Custom components`. The component should appear in the dropdown list (second field) with the name `saml-addon` (if you did install it earlier). Select the component, press `ok`, save the project settings. SAML Add-on is referenced.
-
-## Minimal configuration
-
-Before you start using the component in your project, you need to make some changes in your project.
-
-### Adding Maven repos to a project
+# 3. Configuration <a name="configuration"></a>
 
 The Add-on references artifacts that are not available in CUBA.platform repo. To use the Add-on you need to add the following repos to the `build.gradle` file (section `buildscript` -> `repositories`):
 
@@ -32,7 +62,63 @@ maven {
 }
 ```
 
-### Extension of the standard login window in the CUBA.platform application
+## 3.1 Keystore <a name="keystore"></a>
+
+Keystore contains usename, password, description and java keystore file (jks). 
+
+### 3.1.1 Create keystore <a name="keystore-create"></a>
+
+Each Service Provider must have a unique secret/public connection key. To generate the corresponding pair, you can use the following instruction:
+
+- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys
+- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys
+
+1. Navigate to `Administration` -> `SAML` -> `KeyStore`
+2. Click `Create` button
+3. Fill the `Login` field - login which was used for jks file generation
+4. Fill the `Password` field - password which was used for jks file generation
+4. (Optional) Fill the `Description` field - login and description are used as keystore name representation of the keystore in saml edit screen
+5. Upload `.jks` keystore file
+
+You can not delete keystore if it is linked at least to one connection. Firstly, unselect keystore in saml connection, which you want to delete.
+ 
+## 3.2 SAML Connection <a name="saml-connection"></a>
+
+1. Navigate to `Administration` -> `SAML`
+2. Click `Create` button
+3. Fill the `Name` field - it will be shown to users on the login screen
+4. Fill the `SSO Path` field - it will be used for tenant login
+5. Select needed keystore in dropdown list of `keystore` field
+6. Choose `Default access group` to be set to the new users logged with this IDP
+7. Choose `Processing service` to process the new users logged with this IDP
+8. Fill the `Service provider identity`. This field will be used by IDP, to identify the service provider. Example: `cuba-saml-demo`
+    Then click `Refresh` button. Copy the generated XML from the field below and register it in the IDP
+9. Fill the `Identity Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
+    Then click `Refresh` button. If the URL is correct and IDP works fine - you will see some XML content below
+    Another way to specify IDP metadata is to upload a xml file directly to application by drop it to IDP metadata text area
+10. Click `User Creation` checkbox, if you want to create user from information received from IDP, if user does not exists in application    
+11. Click `Active` checkbox. After that the IDP will be shown on the login screen
+
+### 3.2.1 Tenant login <a name="tenant-login"></a>
+
+By default, the example shows the lookup field with list of IDP providers.
+To simplify login, you can use a specific tenant URL. When a user uses such URL, the system automatically redirects you to the specific IDP.
+Example: `http://localhost:8080/app/ssocircle?`. Here `ssocircle` is the SAMLConnection.ssoPath 
+
+### 3.2.2 SAML Processor <a name="saml-processor"></a>
+
+By default the component provides BaseSamlProcessor which populates to the new user only several attributes from the SAML session:
+- FirstName
+- LastName
+- MiddleName
+- EmailAddress
+
+However, you can define your own implementation of the interface `com.haulmont.addon.saml.core.SamlProcessor` which will handle the SAML data using your own logic.
+The `getName()` method should return a user-friendly name, to show in the lookup field on the SAMLConnection.edit screen.
+
+# 4. Implementation <a name="implementation"></a>
+
+## Extension of the standard login window in the CUBA.platform application
 
 First, you need to extend the standard Login screen. It is recommended to perform it in Cuba Studio. To do this open the project in Cuba Studio, select the tab `Generic UI` and press` New`. In the Templates list, select `Login window` and click `Create`.
 
@@ -242,53 +328,7 @@ cuba.addon.saml.logAllSamlMessages = true
 
 You can observe the details of the implementation in the corresponding demo project.
 
-### Keystore
-
-Each Service Provider must have a unique secret/public connection key. To generate the corresponding pair, you can use the following instruction:
-
-- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys
-- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys
-
-## Register IDP
-
-1. Navigate to `Administration` -> `SAML`
-2. Click `Create` button
-3. Fill the `Name` field - it will be shown to users on the login screen
-4. Fill the `Code` field - it will be used for tenant login
-5. Upload the keystore file (generated in the previous section) and fill `Key Store Login` and `Key Store Password` fields
-6. Choose `Default access group` to be set to the new users logged with this IDP
-7. Choose `Processing service` to process the new users logged with this IDP
-8. Fill the `Service provider identity`. This field will be used by IDP, to identify the service provider. Example: `cuba-saml-demo`
-    Then click `Refresh` button. Copy the generated XML from the field below and register it in the IDP.
-9. Fill the `Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
-    Then click `Refresh` button. If the URL is correct and IDP works fine - you will see some XML content below.
-    Another way to specify IDP metadata is to upload a xml file directly to application by drop it to IDP metadata text area.
-10. Click `Active` checkbox. After that the IDP will be shown on the login screen
-
-## Tenant login
-
-By default, the example shows the lookup field with list of IDP providers.
-To simplify login, you can use a specific tenant URL. When a user uses such URL, the system automatically redirects you to the specific IDP.
-Example: `http://localhost:8080/app/ssocircle?`. Here `ssocircle` is the SAMLConnection.code. 
-
-## Absent users registration
-
-By default, if there is no user in the CUBA.platform application the SP should register the new user. The SAML Add-on provides only straightforward logic of the new user creation, defined in BaseSamlProcessor.
-
-### SamlProcessor
-
-By default the component provides BaseSamlProcessor which populates to the new user only several attributes from the SAML session:
-- FirstName
-- LastName
-- MiddleName
-- EmailAddress
-
-However, you can define your own implementation of the interface `com.haulmont.addon.saml.core.SamlProcessor` which will handle the SAML data using your own logic.
-The `getName()` method should return a user-friendly name, to show in the lookup field on the SAMLCOnnection.edit screen.
-
-# Appendix A: Application Properties
-
-## General Properties
+# 5. General Application Properties <a name="general-properties"></a>
 
 ### cuba.addon.saml.basePath
 

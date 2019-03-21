@@ -1,10 +1,11 @@
 .gradle
 .studio
-*.ipr
+
+.idea/*
 *.iml
-*.iws
+
 build/*
 deploy/*
-modules/*/build/*
-out
-test-run
+out/*
+
+*.sql

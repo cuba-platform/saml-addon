@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.addon.saml.saml.internal.impl;
@@ -41,7 +42,10 @@ import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml2.metadata.RoleDescriptor;
 import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.provider.*;
+import org.opensaml.saml2.metadata.provider.AbstractReloadingMetadataProvider;
+import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.opensaml.xml.security.CriteriaSet;
@@ -54,7 +58,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.saml.*;
+import org.springframework.security.saml.SAMLEntryPoint;
+import org.springframework.security.saml.SAMLLogoutProcessingFilter;
+import org.springframework.security.saml.SAMLProcessingFilter;
+import org.springframework.security.saml.SAMLWebSSOHoKProcessingFilter;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.metadata.*;
 import org.springframework.security.saml.util.SAMLUtil;
@@ -69,7 +76,10 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author adiatullin
@@ -363,7 +373,8 @@ public class SamlConnectionsMetadataManagerImpl extends CachingMetadataManager i
             if (certificate != null) {
                 certificates.add(certificate);
             } else {
-                log.warn("Cannot construct PKIX trust anchor for key with alias {} for provider {}, key isn't included in the keystore", key, provider);
+                log.warn("Cannot construct PKIX trust anchor for key with alias {} for provider {},"
+                        + " key isn't included in the keystore", key, provider);
             }
         }
 
