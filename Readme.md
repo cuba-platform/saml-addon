@@ -21,9 +21,9 @@ To install the component in your project, do the following steps:
 
 1. Open your application in CUBA Studio.
 
-2. Open **Project -> Properties** in the project tree.
+2. Open *Project -> Properties* in the project tree.
 
-3. On the **App components** pane click the **Plus** button next to **Custom components**.
+3. On the *App components* panel click the *Plus* button next to *Custom components*.
 
 4. Paste the add-on coordinates in the corresponding field as follows: `group:name:version`.
 
@@ -35,20 +35,18 @@ Specify the add-on version compatible with the used version of the CUBA platform
 
 | Platform Version | Add-on Version |
 |------------------|----------------|
-|7.0.x             | 0.1-SNAPSHOT   |
-|6.10.x            | 0.2-SNAPSHOT   |
+|7.0.x             | 0.2-SNAPSHOT   |
+|6.10.x            | 0.1-SNAPSHOT   |
 
-5. Click **OK** to save the project properties.
+5. Click **OK** to confirm and save project properties.
 
-After that the SAML SSO functions will be available.
+<!--After that the SAML SSO functions will be available.-->
 
-If you want use own key for keystore's passwords encryption. There are two properties must be specified `encryption.key` and `encryption.iv` in app.properties in Core module. Otherwise the default keys will be used. (encryption keys declared in app-component.xml)
- 
-To use the add-on developer needs to install it to the their local repository. It is recommended to do it in Cuba Studio. To import the add-on click `Run` ->` Install app component`.
+To use your own key for keystore passwords encryption specify `encryption.key` and `encryption.iv` properties in `app.properties.xml` in the `core` module. Otherwise the default keys declared in the `app-component.xml` file will be used.
 
-# 3. Configuration <a name="configuration"></a>
+## 2.2. Setting Repositories <a name="setting-repositories"></a>
 
-The Add-on references artifacts that are not available in CUBA.platform repo. To use the Add-on you need to add the following repos to the `build.gradle` file (section `buildscript` -> `repositories`):
+The add-on use references artifacts that are not available in `CUBA.platform` repo. To use the add-on you need to add the following repositories to the `build.gradle` file in the `buildscript -> repositories` section with the following repositories:
 
 ```groovy
 maven {
@@ -61,45 +59,54 @@ maven {
     url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
 }
 ```
+You can also do it in the *Properties* window:
 
-## 3.1 Keystore <a name="keystore"></a>
+1. Go to *Project -> Properties*.
+2. On the *Repositories* panel click the *Plus* button and specify the URL of repositories.
 
-Keystore contains usename, password, description and java keystore file (jks). 
+# 3. Configuration <a name="configuration"></a>
+# 3.1. Keystore <a name="keystore"></a>
 
 ### 3.1.1 Create keystore <a name="keystore-create"></a>
 
 Each Service Provider must have a unique secret/public connection key. To generate the corresponding pair, you can use the following instruction:
 
-- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys
-- https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys
+Firstly, you need to generate a public/private key pair. Use the following links to instructions:
 
-1. Navigate to `Administration` -> `SAML` -> `KeyStore`
-2. Click `Create` button
-3. Fill the `Login` field - login which was used for jks file generation
-4. Fill the `Password` field - password which was used for jks file generation
-4. (Optional) Fill the `Description` field - login and description are used as keystore name representation of the keystore in saml edit screen
-5. Upload `.jks` keystore file
+- [to generate private key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys);
+- [to generate public key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys).
 
-You can not delete keystore if it is linked at least to one connection. Firstly, unselect keystore in saml connection, which you want to delete.
- 
+Create a keystore using your application UI:
+1. Go to *Administration -> SAML* screen.
+2. Click the *KeyStore* button.
+2. Click the *Create* button.
+3. Fill in the *Login* field - login that was used for JKS file generation.
+4. Fill in the *Password* field - password that was used for JKS file generation.
+4. (Optional) Fill in the *Description* field - will be used with the login as keystore representation in *SAML Connection editor* screen.
+5. Upload `.jks` keystore file.
+6. Click *OK* to create the keystore with entered settings.
+
+You can not delete keystore if it is linked at least to one connection. Firstly, you need to unselect keystore in *SAML Connection editor* screen.
+
 ## 3.2 SAML Connection <a name="saml-connection"></a>
 
-1. Navigate to `Administration` -> `SAML`
-2. Click `Create` button
-3. Fill the `Name` field - it will be shown to users on the login screen
-4. Fill the `SSO Path` field - it will be used for tenant login
-5. Select needed keystore in dropdown list of `keystore` field
-6. Choose `Default access group` to be set to the new users logged with this IDP
-7. Choose `Processing service` to process the new users logged with this IDP
-8. Fill the `Service provider identity`. This field will be used by IDP, to identify the service provider. Example: `cuba-saml-demo`
-    Then click `Refresh` button. Copy the generated XML from the field below and register it in the IDP
-9. Fill the `Identity Provider metadata URL` provided by this IDP. Example: `http://idp.ssocircle.com/idp-meta.xml`
-    Then click `Refresh` button. If the URL is correct and IDP works fine - you will see some XML content below
-    Another way to specify IDP metadata is to upload a xml file directly to application by drop it to IDP metadata text area
-10. Click `User Creation` checkbox, if you want to create user from information received from IDP, if user does not exists in application    
-11. Click `Active` checkbox. After that the IDP will be shown on the login screen
+To configure SAML connection to identity provider do the following steps:
+1. Go to *Administration -> SAML* screen.
+2. Click the *Create* button.
+3. Fill in the *Name* field - it will be shown to users in the login screen.
+4. Fill in the *SSO Path* field - it will be used for tenant login.
+5. Select the required keystore in the drop-down list of *Keystore* field.
+6. Choose *Default access group* that will be set to new users logged in with this IdP.
+7. Choose *Processing service* to process new users logged in with this IdP.
+8. Fill in the *Service provider identity*. This field will be used by IdP to identify SP. Example: `cuba-saml-demo`. Then click *Refresh* button. Copy the generated XML from the field below and register it in the IdP.
+9. Fill in the *Identity Provider metadata URL* field provided by this IdP. Example: `http://idp.ssocircle.com/idp-meta.xml`
+    Then click *Refresh* button. If the URL is correct and IdP works fine - you will see some XML content below.
+    Another way to specify IdP metadata is to upload an XML file using the corresponding button.
+10. Click *User Creation* checkbox, if you want to create user from information received from IdP in case user does not exist in the application.
+11. Click *Active* checkbox. After that the IdP will be shown in the login screen.
+12. Click *OK* to save settings.
 
-### 3.2.1 Tenant login <a name="tenant-login"></a>
+### 3.3 Tenant Login <a name="tenant-login"></a>
 
 By default, the example shows the lookup field with list of IDP providers.
 To simplify login, you can use a specific tenant URL. When a user uses such URL, the system automatically redirects you to the specific IDP.
@@ -118,7 +125,14 @@ The `getName()` method should return a user-friendly name, to show in the lookup
 
 # 4. Implementation <a name="implementation"></a>
 
-## Extension of the standard login window in the CUBA.platform application
+## 4.1. Extension of the Standard Login Window <a name="extension-login-window"></a>
+
+To extent the standard login screen:
+1. Open your project in CUBA Studio.
+2. Expand the *Generic UI* in the CUBA project tree.
+3. Right-click *Screens* and go to *New -> Screen*.
+4. Go to the *Legacy Screen Templates* and select *Login window*.
+5. Click *Next -> Finish*.
 
 Then add a lookup field with list of IdP providers in the screen controller. When you choose one of providers SAML request will be initiated.
 
@@ -516,107 +530,74 @@ Also, you can observe the details of the implementation in the corresponding dem
 
 ### cuba.addon.saml.basePath
 
-* __Description:__ URL SAML context path, e.g. "/saml"
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
+* __Description:__ URL SAML context path, e.g. `/saml`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.loginPath
 
-* __Description:__ SAML login path part, e.g. "/login", and with the base path the result will be "/saml/logout".
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
+* __Description:__ SAML login path part, e.g. `/login`, and with the base path the result will be `/saml/logout`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.logoutPath
 
-* __Description:__ SAML logout path part, e.g. "/logout" and with the base path the result will be "/saml/logout".
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
+* __Description:__ SAML logout path part, e.g. `/logout` and with the base path the result will be `/saml/logout`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.metadataPath
 
-* __Description:__ SAML metadata display path part, e.g. "/metadata" and with the base path the result will be "/saml/metadata?tenant=code" where code is SAMLConnection.code.
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
+* __Description:__ SAML metadata display path part, e.g. `/metadata` and with the base path the result will be `/saml/metadata?tenant=code` where code is `SAMLConnection.code`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.responseSkewSec
 
-* __Description:__ Maximum difference between local time and time of the assertion creation which still allows message to be processed. Basically determines maximum difference between clocks of the IDP and SP machines. (in seconds)
-
-* __Default value:__ *60*
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
-
+* __Description:__ Maximum difference between local time and time of the assertion creation which still allows message to be processed. Basically determines maximum difference between clocks of the IdP and SP machines. (in seconds)
+* __Default value:__ `60`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.maxAuthenticationAgeSec
 
-* __Description:__ Maximum time between users authentication and processing of the AuthNResponse message. (in seconds)
-
-* __Default value:__ *7200*
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
-
+* __Description:__ Maximum time between users authentication and processing of the AuthNResponse message (in seconds)
+* __Default value:__ `7200`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.maxAssertionTimeSec
 
 * __Description:__ Maximum time between assertion creation and current time when the assertion is usable. (in seconds)
-
-* __Default value:__ *3000*
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
-
+* __Default value:__ `3000`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.ssoLogout
 
-* __Description:__ Defines whether the logout action will be also performed on the IDP when user performs logout in the CUBA.platform application (SP)
-
-* __Default value:__ *false*
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
-
+* __Description:__ Defines whether the logout action will be also performed on the IdP when user performs logout in the CUBA.platform application (SP)
+* __Default value:__ `false`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.proxy.enabled
 
-* __Description:__ Defines is a application use a proxy server or not.
-
-* __Default value:__ *false*
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
+* __Description:__ Defines is a application use a proxy server or not
+* __Default value:__ `false`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 
 ### cuba.addon.saml.proxy.serverUrl
 
-* __Description:__ Defines the address of remote proxy server if a proxy server is using, e.g. "https://myhost.com".
-
+* __Description:__ Defines the address of remote proxy server if a proxy server is using, e.g. `https://myhost.com`
 * __Default value:__ **
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
 
 ### cuba.addon.saml.logAllSamlMessages
 
-* __Description:__ Determines if all SAML messages should be logged.
-
-* __Default value:__ *true*
-
-* __Type:__ used in the Web Client
-
-* __Interface:__ *SamlConfig*
+* __Description:__ Determines if all SAML messages should be logged
+* __Default value:__ `true`
+* __Interface:__ *SamlConfig*    
+Used in the Web Client.
