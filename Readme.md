@@ -151,6 +151,7 @@ Here is an example of implementation of the whole controller:
 1. Screen controller `ext-loginWindow.xml`:
 
 <details><summary>Click to expand the code</summary>
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
@@ -179,14 +180,15 @@ Here is an example of implementation of the whole controller:
         </vbox>
     </layout>
 </window>
- ```
+```
  </details>
 
 
 2. Java class `ExtAppLoginWindow.java`
 
 
- <details><summary>Click to expand the example for 6.10</summary>
+<details><summary>Click to expand the example for 6.10</summary>
+
 ```xml
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
@@ -337,9 +339,11 @@ public class ExtAppLoginWindow extends AppLoginWindow {
     }
 }
  ```
- </details>
+ 
+</details>
 
- <details><summary>Click to expand the example for 7.0</summary>
+<details><summary>Click to expand the example for 7.0</summary>
+
 ```xml
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
@@ -504,8 +508,10 @@ public class ExtAppLoginWindow extends AppLoginWindow {
         return (samlConfig.getProxyEnabled() ? samlConfig.getProxyServerUrl() : globalConfig.getWebAppUrl())
                 + samlConfig.getSamlBasePath() + samlConfig.getSamlLoginPath();
     }
-} ```
- </details>
+} 
+```
+
+</details>
 
 3. The `messages.properties` file should contain the following strings:
 
