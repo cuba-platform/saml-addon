@@ -2,20 +2,28 @@
 
 - [1. Overview](#overview)
 - [2. Installation](#installation)
+  - [2.1. Adding the Add-on](#adding-the-addon)
+  - [2.2. Setting Repositories](#setting-repositories)
 - [3. Configuration](#configuration)
   - [3.1. Keystore](#keystore)
-    - [3.1.1 Keystore Creation](#keystore-create)
+    - [3.1.1. Creating Keystore](#keystore-create)
   - [3.2. SAML Connection](#saml-connection)
-    - [3.2.1 Tenant login](#tenant-login)
-    - [3.2.2 SAML Processor](#saml-processor)
+  - [3.3. Tenant Login](#tenant-login)
+  - [3.4. SAML Processor](#saml-processor)
 - [4. Implementation](#implementation)
+  - [4.1. Extension of the Standard Login Window](#extension-login-window)
 - [5. General Application Properties](#general-properties)
 
 # 1. Overview
 
-The purpose of the SAML Integration CUBA component is to provide a readily available instrument of authentication via a SAML Identity Provider service in any CUBA-based application.
+The addon provides a readily available instrument of authentication via a SAML Identity Provider (IdP) service in any CUBA-based application wich is service provider (SP).
+
+See [sample project](https://git.haulmont.com/app-components/saml-addon-demo), using this add-on.
 
 # 2. Installation <a name="installation"></a>
+The installation process consists of two steps: adding the component and specifying repositories.
+
+## 2.1. Adding the Add-on <a name="adding-the-addon"></a>
 
 To install the component in your project, do the following steps:
 
@@ -67,14 +75,16 @@ You can also do it in the *Properties* window:
 # 3. Configuration <a name="configuration"></a>
 # 3.1. Keystore <a name="keystore"></a>
 
-### 3.1.1 Create keystore <a name="keystore-create"></a>
+Before setting SAML connection you need to create keystore containing a usename, password, description and JKS (Java Key Store) file. Your service provider application must have a unique public/private key pair.
 
-Each Service Provider must have a unique secret/public connection key. To generate the corresponding pair, you can use the following instruction:
+### 3.1.1 Creating keystore <a name="keystore-create"></a>
 
 Firstly, you need to generate a public/private key pair. Use the following links to instructions:
 
 - [to generate private key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys);
 - [to generate public key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys).
+
+You will get JKS file as the result.
 
 Create a keystore using your application UI:
 1. Go to *Administration -> SAML* screen.
@@ -98,9 +108,9 @@ To configure SAML connection to identity provider do the following steps:
 5. Select the required keystore in the drop-down list of *Keystore* field.
 6. Choose *Default access group* that will be set to new users logged in with this IdP.
 7. Choose *Processing service* to process new users logged in with this IdP.
-8. Fill in the *Service provider identity*. This field will be used by IdP to identify SP. Example: `cuba-saml-demo`. Then click *Refresh* button. Copy the generated XML from the field below and register it in the IdP.
-9. Fill in the *Identity Provider metadata URL* field provided by this IdP. Example: `http://idp.ssocircle.com/idp-meta.xml`
-    Then click *Refresh* button. If the URL is correct and IdP works fine - you will see some XML content below.
+8. Fill in the *Service provider identity*. This field will be used by IdP to identify your application. For example: `cuba-saml-demo`. Then click *Refresh* button. Copy the generated XML from the field below and register it in the IdP.
+9. Fill in the *Identity Provider metadata URL* field provided by this IdP. Example: `http://idp.ssocircle.com/idp-meta.xml`.
+    Then click *Refresh* button. If the URL is correct and IdP works OK - you will see some XML content below.
     Another way to specify IdP metadata is to upload an XML file using the corresponding button.
 10. Click *User Creation* checkbox, if you want to create user from information received from IdP in case user does not exist in the application.
 11. Click *Active* checkbox. After that the IdP will be shown in the login screen.
@@ -108,20 +118,20 @@ To configure SAML connection to identity provider do the following steps:
 
 ### 3.3 Tenant Login <a name="tenant-login"></a>
 
-By default, the example shows the lookup field with list of IDP providers.
-To simplify login, you can use a specific tenant URL. When a user uses such URL, the system automatically redirects you to the specific IDP.
-Example: `http://localhost:8080/app/ssocircle?`. Here `ssocircle` is the SAMLConnection.ssoPath 
+The common example to login using IdP is to use the lookup field with list of IdP providers.
+To simplify login, you can use a specific tenant URL. For example, `http://localhost:8080/app/ssocircle?`, where `ssocircle` is the `SSO Path` set while configuring SAML Connection. When you use such URL, the system automatically redirects you to the specific IdP.
 
-### 3.2.2 SAML Processor <a name="saml-processor"></a>
+### 3.4 SAML Processor <a name="saml-processor"></a>
 
-By default the component provides BaseSamlProcessor which populates to the new user only several attributes from the SAML session:
+By default, the component provides `BaseSamlProcessor` which fills in the following attributes for the new user from the SAML session:
+
 - FirstName
 - LastName
 - MiddleName
 - EmailAddress
 
 However, you can define your own implementation of the interface `com.haulmont.addon.saml.core.SamlProcessor` which will handle the SAML data using your own logic.
-The `getName()` method should return a user-friendly name, to show in the lookup field on the SAMLConnection.edit screen.
+The `getName()` method should return a user-friendly name, to show it in the lookup field on the *SAML Connection editor* screen.
 
 # 4. Implementation <a name="implementation"></a>
 
@@ -131,18 +141,16 @@ To extent the standard login screen:
 1. Open your project in CUBA Studio.
 2. Expand the *Generic UI* in the CUBA project tree.
 3. Right-click *Screens* and go to *New -> Screen*.
-4. Go to the *Legacy Screen Templates* and select *Login window*.
+4. Go to the *Legacy Screen Templates* tab and select *Login window*.
 5. Click *Next -> Finish*.
 
 Then add a lookup field with list of IdP providers in the screen controller. When you choose one of providers SAML request will be initiated.
 
 Here is an example of implementation of the whole controller:
 
-1. Screen controller ___ext-loginWindow.xml___
+1. Screen controller `ext-loginWindow.xml`:
 
-<details>
-  <summary>Click to expand the code</summary>
-
+<details><summary>Click to expand the code</summary>
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
@@ -171,15 +179,15 @@ Here is an example of implementation of the whole controller:
         </vbox>
     </layout>
 </window>
-```
-</details>
+ ```
+ </details>
 
-2. Java class ___ExtAppLoginWindow.java___
 
-<details>
-  <summary>Click to expand example for CUBA 6.10</summary>
+2. Java class `ExtAppLoginWindow.java`
 
-```java
+
+ <details><summary>Click to expand the example for 6.10</summary>
+```xml
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
@@ -328,14 +336,11 @@ public class ExtAppLoginWindow extends AppLoginWindow {
                  + samlConfig.getSamlBasePath() + samlConfig.getSamlLoginPath();
     }
 }
-```
+ ```
+ </details>
 
-</details>
-
-<details>
-  <summary>Click to expand the example for CUBA 7.0</summary>
-  
-```java
+ <details><summary>Click to expand the example for 7.0</summary>
+```xml
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
@@ -499,19 +504,17 @@ public class ExtAppLoginWindow extends AppLoginWindow {
         return (samlConfig.getProxyEnabled() ? samlConfig.getProxyServerUrl() : globalConfig.getWebAppUrl())
                 + samlConfig.getSamlBasePath() + samlConfig.getSamlLoginPath();
     }
-}
-```
-  
-</details>
+} ```
+ </details>
 
-3. The ___messages.properties___ file should contain the following strings:
+3. The `messages.properties` file should contain the following strings:
 
 ```properties
 captions.loginBy = Login by
 errors.message.samlLoginFailed = User '%s' hasn't been logged by SAML.
 ```
 
-4. The ___web-app.properties___ file should contain the following strings:
+4. The `web-app.properties` file should contain the following strings:
 
 ```properties
 cuba.addon.saml.basePath = /saml
@@ -524,7 +527,7 @@ cuba.addon.saml.maxAssertionTimeSec = 3000
 cuba.addon.saml.logAllSamlMessages = true
 ```
 
-Also, you can observe the details of the implementation in the corresponding demo project.
+Also, you can observe the details of the implementation in the corresponding [demo project](https://git.haulmont.com/app-components/saml-addon-demo).
 
 # 5. General Application Properties <a name="general-properties"></a>
 
