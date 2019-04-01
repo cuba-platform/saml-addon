@@ -16,7 +16,7 @@
 
 # 1. Overview
 
-This component provides a readily available instrument of authentication in any CUBA-based application using SAML open standard. That allows Identity Provider (IdP) to pass authorization credentials to your applications - service providers (SP).
+This component provides a readily available instrument of authentication in any CUBA-based application using SAML open standard. That allows identity provider (IdP) to pass authorization credentials to your applications - service providers (SP).
 
 The add-on enables Single Sign-On in your application. You log in once with the IdP and this set of credentials will be used to log in your CUBA applications.
 
@@ -128,8 +128,8 @@ To configure SAML connection to identity provider do the following steps:
 
 ### 3.3 Tenant Login <a name="tenant-login"></a>
 
-The common example to log in using IdP is to use the lookup field with a list of IdP providers.
-To simplify login, you can use a specific tenant URL. For example, `http://localhost:8080/app/ssocircle?`, where `ssocircle` is the `SSO Path` set while configuring SAML Connection. When you use such URL, the system automatically redirects you to the specific IdP.
+To simplify login, you can use a specific tenant URL. For example,
+`http://localhost:8080/app/ssocircle?` or `http://localhost:8080/app?tenant=ssocircle`, where `ssocircle` is the `SSO Path` set while configuring SAML Connection. When you use such URL, the system automatically redirects you to the specific IdP.
 
 ### 3.4 SAML Processor <a name="saml-processor"></a>
 
