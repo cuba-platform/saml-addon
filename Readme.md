@@ -16,7 +16,14 @@
 
 # 1. Overview
 
-The addon provides a readily available instrument of authentication via a SAML Identity Provider (IdP) service in any CUBA-based application wich is service provider (SP).
+This component provides a readily available instrument of authentication in any CUBA-based application using SAML open standard. That allows Identity Provider (IdP) to pass authorization credentials to your applications - service providers (SP).
+
+The add-on enables Single Sign-On in your application. You log in once with the IdP and this set of credentials will be used to log in your CUBA applications.
+
+Key features:
+ -  simplified authorization procedure for users and service providers;
+ -  separately existing of an identity provider and service providers, which centralizes user management;
+ -  user interface to set and configure SAML connections.
 
 See [sample project](https://git.haulmont.com/app-components/saml-addon-demo), using this add-on.
 
@@ -50,11 +57,11 @@ Specify the add-on version compatible with the used version of the CUBA platform
 
 <!--After that the SAML SSO functions will be available.-->
 
-To use your own key for keystore passwords encryption specify `encryption.key` and `encryption.iv` properties in `app.properties.xml` in the `core` module. Otherwise the default keys declared in the `app-component.xml` file will be used.
+To use your own key for keystore passwords encryption specify `encryption.key` and `encryption.iv` properties in `app.properties.xml` in the `core` module. Otherwise, the default keys declared in the `app-component.xml` file will be used.
 
 ## 2.2. Setting Repositories <a name="setting-repositories"></a>
 
-The add-on use references artifacts that are not available in `CUBA.platform` repo. To use the add-on you need to add the following repositories to the `build.gradle` file in the `buildscript -> repositories` section with the following repositories:
+The add-on uses references artifacts that are not available in `CUBA.platform` repo. To use the add-on you need to add the following repositories to the `build.gradle` file in the `buildscript -> repositories` section with the following repositories:
 
 ```groovy
 maven {
@@ -73,16 +80,19 @@ You can also do it in the *Properties* window:
 2. On the *Repositories* panel click the *Plus* button and specify the URL of repositories.
 
 # 3. Configuration <a name="configuration"></a>
+
+Configuration consists of creating keystore and setting SAML connection.
+
 # 3.1. Keystore <a name="keystore"></a>
 
-Before setting SAML connection you need to create keystore containing a usename, password, description and JKS (Java Key Store) file. Your service provider application must have a unique public/private key pair.
+Before setting SAML connection you need to create keystore containing a username, password, description, and JKS (Java Key Store) file. Your service provider application must have a unique public/private key pair.
 
 ### 3.1.1 Creating keystore <a name="keystore-create"></a>
 
 Firstly, you need to generate a public/private key pair. Use the following links to instructions:
 
-- [to generate private key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys);
-- [to generate public key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys).
+- [to generate a private key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-private-keys);
+- [to generate a public key](https://docs.spring.io/spring-security-saml/docs/1.0.4.RELEASE/reference/html/security.html#configuration-key-management-public-keys).
 
 You will get JKS file as the result.
 
@@ -108,17 +118,17 @@ To configure SAML connection to identity provider do the following steps:
 5. Select the required keystore in the drop-down list of *Keystore* field.
 6. Choose *Default access group* that will be set to new users logged in with this IdP.
 7. Choose *Processing service* to process new users logged in with this IdP.
-8. Fill in the *Service provider identity*. This field will be used by IdP to identify your application. For example: `cuba-saml-demo`. Then click *Refresh* button. Copy the generated XML from the field below and register it in the IdP.
+8. Fill in the *Service provider identity*. This field will be used by IdP to identify your application. For example: `cuba-saml-demo`. Then click the *Refresh* button. Copy the generated XML from the field below and register it in the IdP.
 9. Fill in the *Identity Provider metadata URL* field provided by this IdP. Example: `http://idp.ssocircle.com/idp-meta.xml`.
-    Then click *Refresh* button. If the URL is correct and IdP works OK - you will see some XML content below.
+    Then click the *Refresh* button. If the URL is correct and IdP works OK - you will see some XML content below.
     Another way to specify IdP metadata is to upload an XML file using the corresponding button.
-10. Click *User Creation* checkbox, if you want to create user from information received from IdP in case user does not exist in the application.
-11. Click *Active* checkbox. After that the IdP will be shown in the login screen.
+10. Click *User Creation* checkbox, if you want to create a user from information received from IdP in case the user does not exist in the application.
+11. Click *Active* checkbox. After that, the IdP will be shown in the login screen.
 12. Click *OK* to save settings.
 
 ### 3.3 Tenant Login <a name="tenant-login"></a>
 
-The common example to login using IdP is to use the lookup field with list of IdP providers.
+The common example to log in using IdP is to use the lookup field with a list of IdP providers.
 To simplify login, you can use a specific tenant URL. For example, `http://localhost:8080/app/ssocircle?`, where `ssocircle` is the `SSO Path` set while configuring SAML Connection. When you use such URL, the system automatically redirects you to the specific IdP.
 
 ### 3.4 SAML Processor <a name="saml-processor"></a>
@@ -137,16 +147,16 @@ The `getName()` method should return a user-friendly name, to show it in the loo
 
 ## 4.1. Extension of the Standard Login Window <a name="extension-login-window"></a>
 
-To extent the standard login screen:
+To extend the standard login screen:
 1. Open your project in CUBA Studio.
 2. Expand the *Generic UI* in the CUBA project tree.
 3. Right-click *Screens* and go to *New -> Screen*.
-4. Go to the *Legacy Screen Templates* tab and select *Login window*.
+4. Go to the *Legacy Screen Templates* tab and select the *Login window*.
 5. Click *Next -> Finish*.
 
-Then add a lookup field with list of IdP providers in the screen controller. When you choose one of providers SAML request will be initiated.
+Then add a lookup field with the list of IdP providers in the screen controller. When you choose one of providers SAML request will be initiated.
 
-Here is an example of implementation of the whole controller:
+Here is an example of the implementation of the whole controller:
 
 1. Screen controller `ext-loginWindow.xml`:
 
@@ -339,7 +349,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
     }
 }
  ```
- 
+
 </details>
 
 <details><summary>Click to expand the example for 7.0</summary>
@@ -508,7 +518,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
         return (samlConfig.getProxyEnabled() ? samlConfig.getProxyServerUrl() : globalConfig.getWebAppUrl())
                 + samlConfig.getSamlBasePath() + samlConfig.getSamlLoginPath();
     }
-} 
+}
 ```
 
 </details>
@@ -563,28 +573,28 @@ Used in the Web Client.
 
 ### cuba.addon.saml.responseSkewSec
 
-* __Description:__ Maximum difference between local time and time of the assertion creation which still allows message to be processed. Basically determines maximum difference between clocks of the IdP and SP machines. (in seconds)
+* __Description:__ Maximum difference between local time and time of the assertion creation which still allows message to be processed. Basically determines maximum difference between clocks of the IdP and SP machines (in seconds).
 * __Default value:__ `60`
 * __Interface:__ *SamlConfig*    
 Used in the Web Client.
 
 ### cuba.addon.saml.maxAuthenticationAgeSec
 
-* __Description:__ Maximum time between users authentication and processing of the AuthNResponse message (in seconds)
+* __Description:__ Maximum time between users authentication and processing of the AuthNResponse message (in seconds).
 * __Default value:__ `7200`
 * __Interface:__ *SamlConfig*    
 Used in the Web Client.
 
 ### cuba.addon.saml.maxAssertionTimeSec
 
-* __Description:__ Maximum time between assertion creation and current time when the assertion is usable. (in seconds)
+* __Description:__ Maximum time between assertion creation and current time when the assertion is usable (in seconds).
 * __Default value:__ `3000`
 * __Interface:__ *SamlConfig*    
 Used in the Web Client.
 
 ### cuba.addon.saml.ssoLogout
 
-* __Description:__ Defines whether the logout action will be also performed on the IdP when user performs logout in the CUBA.platform application (SP)
+* __Description:__ Defines whether the logout action will be also performed on the IdP when user performs logout in the CUBA application (SP)
 * __Default value:__ `false`
 * __Interface:__ *SamlConfig*    
 Used in the Web Client.
