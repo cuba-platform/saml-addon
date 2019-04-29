@@ -177,8 +177,8 @@ public class BaseSamlProcessor implements SamlProcessor {
             email = samlSession.getPrincipal();
         }
 
-        TypedQuery<User> query = em.createQuery("select u from sec$User u where u.email = :email", User.class);
-        query.setParameter("email", email);
+        TypedQuery<User> query = em.createQuery("select u from sec$User u where lower(u.email) = :email", User.class);
+        query.setParameter("email", email.toLowerCase());
         query.setViewName(View.LOCAL);
 
         return query.getFirstResult();
