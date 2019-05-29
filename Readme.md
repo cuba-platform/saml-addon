@@ -59,26 +59,6 @@ Specify the add-on version compatible with the used version of the CUBA platform
 
 To use your own key for keystore passwords encryption specify `encryption.key` and `encryption.iv` properties in `app.properties.xml` in the `core` module. Otherwise, the default keys declared in the `app-component.xml` file will be used.
 
-## 2.2. Setting Repositories <a name="setting-repositories"></a>
-
-The add-on uses references artifacts that are not available in `CUBA.platform` repo. To use the add-on you need to add the following repositories to the `build.gradle` file in the `buildscript -> repositories` section with the following repositories:
-
-```groovy
-maven {
-    url 'https://repository.mulesoft.org/releases/'
-}
-maven {
-    url 'https://artifacts.alfresco.com/nexus/content/repositories/public/'
-}
-maven {
-    url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
-}
-```
-You can also do it in the *Properties* window:
-
-1. Go to *Project -> Properties*.
-2. On the *Repositories* panel click the *Plus* button and specify the URL of repositories.
-
 # 3. Configuration <a name="configuration"></a>
 
 Configuration consists of creating keystore and setting SAML connection.
