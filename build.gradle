@@ -19,16 +19,17 @@ buildscript {
     ext.cubaVersion = '7.0.4'
     repositories {
         mavenLocal()
-        jcenter()
-        maven {
-            url 'https://repository.mulesoft.org/releases/'
+
+        if (System.getenv('HAULMONT_REPOSITORY_URL')) {
+            maven {
+                credentials {
+                    username System.getenv('HAULMONT_REPOSITORY_USER')
+                    password System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+                }
+                url System.getenv('HAULMONT_REPOSITORY_URL')
+            }
         }
-        maven {
-            url 'https://artifacts.alfresco.com/nexus/content/repositories/public/'
-        }
-        maven {
-            url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
-        }
+
         maven {
             url 'https://repo.cuba-platform.com/content/groups/work'
             credentials {
@@ -40,7 +41,7 @@ buildscript {
 
     dependencies {
         classpath "com.haulmont.gradle:cuba-plugin:$cubaVersion"
-        classpath "com.haulmont.gradle:addon-gradle-plugin:1.0.4"
+        classpath "com.haulmont.gradle:addon-gradle-plugin:1.0.8"
     }
 }
 
@@ -108,10 +109,6 @@ configure([globalModule, coreModule, webModule]) {
 
     artifacts {
         archives sourceJar
-    }
-
-    findbugs {
-        excludeFilter = new File("${rootProject.projectDir}/config/findbugs/excludeBugsFilter.xml")
     }
 }
 
