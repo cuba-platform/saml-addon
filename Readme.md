@@ -28,7 +28,7 @@ Key features:
  -  separately existing of an identity provider and service providers, which centralizes user management;
  -  user interface to set and configure SAML connections.
 
-See [sample project](https://git.haulmont.com/app-components/saml-addon-demo), using this add-on.
+See [sample project](https://github.com/cuba-platform/saml-addon-demo), using this add-on.
 
 # 2. Installation <a name="installation"></a>
 The installation process consists of two steps: adding the component and specifying repositories.
