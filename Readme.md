@@ -148,10 +148,10 @@ Here is an example of the implementation of the whole controller:
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        class="com.company.sd.web.screens.ExtAppLoginWindow"
+        class="com.haulmont.sd.web.screens.ExtAppLoginWindow"
         extends="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"
         xmlns:ext="http://schemas.haulmont.com/cuba/window-ext.xsd"
-        messagesPack="com.company.sd.web.screens">
+        messagesPack="com.haulmont.sd.web.screens">
     <dialogMode height="600"
                 width="800"/>
     <layout>
