@@ -399,7 +399,7 @@ public class SamlConnectionContextProviderImpl extends SAMLContextProviderImpl {
         }
     }
 
-    protected class ProxyRequestWrapper extends HttpServletRequestWrapper {
+    protected static class ProxyRequestWrapper extends HttpServletRequestWrapper {
 
         protected URL proxyUrl;
 
