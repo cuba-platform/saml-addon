@@ -60,7 +60,7 @@ apply(plugin: 'addon-gradle-plugin')
 cuba {
     artifact {
         group = 'com.haulmont.addon.saml'
-        version = '0.1'
+        version = '0.2'
         isSnapshot = true
     }
     tomcat {
