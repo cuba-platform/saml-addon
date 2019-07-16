@@ -15,6 +15,7 @@
   - [3.4. SAML Processor](#saml-processor)
 - [4. Implementation](#implementation)
   - [4.1. Extension of the Standard Login Window](#extension-login-window)
+  - [4.2. Setup signing method for SAML messages](#setup-signing-method)
 - [5. General Application Properties](#general-properties)
 
 # 1. Overview
@@ -182,7 +183,7 @@ Here is an example of the implementation of the whole controller:
 
 <details><summary>Click to expand the example for 6.10</summary>
 
-```xml
+```java
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
@@ -337,7 +338,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
 
 <details><summary>Click to expand the example for 7.0</summary>
 
-```xml
+```java
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
@@ -375,9 +376,6 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 
-/**
- * @author kuchmin
- */
 public class ExtAppLoginWindow extends AppLoginWindow {
 
     private static final Logger log = LoggerFactory.getLogger(ExtAppLoginWindow.class);
@@ -527,6 +525,56 @@ cuba.addon.saml.logAllSamlMessages = true
 ```
 
 Also, you can observe the details of the implementation in the corresponding [demo project](https://git.haulmont.com/app-components/saml-addon-demo).
+
+## 4.2. Setup signing method for SAML messages <a name="setup-signing-method"></a>
+
+By default opensaml spring component uses sha1 digest algorithm for signing SAML messages. The most convenient way to use different signing message
+is create class in `WEB` module with addition changes in SecurityContext.
+
+<details><summary>Click to expand the example</summary>
+
+```java
+import org.opensaml.xml.Configuration;
+import org.opensaml.xml.security.BasicSecurityConfiguration;
+import org.opensaml.xml.signature.SignatureConstants;
+
+public class SecurityConfiguration {
+ 
+ public void initialize() {
+        BasicSecurityConfiguration configuration = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+
+        // Asymmetric key algorithms
+        configuration.registerSignatureAlgorithmURI("RSA", SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+        configuration.registerSignatureAlgorithmURI("DSA", SignatureConstants.ALGO_ID_SIGNATURE_DSA);
+        configuration.registerSignatureAlgorithmURI("EC", SignatureConstants.ALGO_ID_SIGNATURE_ECDSA_SHA256);
+
+        // HMAC algorithms
+        configuration.registerSignatureAlgorithmURI("AES", SignatureConstants.ALGO_ID_MAC_HMAC_SHA256);
+        configuration.registerSignatureAlgorithmURI("DESede", SignatureConstants.ALGO_ID_MAC_HMAC_SHA256);
+
+        // Other signature-related params
+        configuration.setSignatureCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+        configuration.setSignatureHMACOutputLength(null);
+        configuration.setSignatureReferenceDigestMethod(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+    }
+}
+```
+</details>
+
+
+Declare bean in `saml-dispatcher-spring.xml`
+
+```xml
+<!-- Initialization of OpenSAML library-->
+<bean id="samlBootstrap" class="org.springframework.security.saml.SAMLBootstrap"/>
+...
+<bean id="securityConfiguration" class="com.haulmont.addon.saml.web.SecurityConfiguration" init-method="initialize"
+          depends-on="samlBootstrap"/>
+```
+Basic configuration initilized in class `org.springframework.security.saml.SAMLBootstrap`. 
+To be sured that security config initialized and not overrides your changes set depends-on attribute with value of bean id of class `org.springframework.security.saml.SAMLBootstrap`.
+ 
+All supported signing methods declared in class `org.opensaml.xml.signature.SignatureConstants`
 
 # 5. General Application Properties <a name="general-properties"></a>
 
