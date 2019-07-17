@@ -113,7 +113,7 @@ To configure SAML connection to identity provider do the following steps:
 ### 3.3 Tenant Login <a name="tenant-login"></a>
 
 To simplify login, you can use a specific tenant URL. For example,
-`http://localhost:8080/app/ssocircle?` or `http://localhost:8080/app?tenant=ssocircle`, where `ssocircle` is the `SSO Path` set while configuring SAML Connection. When you use such URL, the system automatically redirects you to the specific IdP.
+`http://localhost:8080/app/saml/login?tenant=ssoPath`, where `ssoPath` is the value of the field with the same name in SAML Connection entity. When you use such URL, the system automatically redirects you to the specific IdP.
 
 ### 3.4 SAML Processor <a name="saml-processor"></a>
 
@@ -528,8 +528,8 @@ Also, you can observe the details of the implementation in the corresponding [de
 
 ## 4.2. Setup signing method for SAML messages <a name="setup-signing-method"></a>
 
-By default opensaml spring component uses sha1 digest algorithm for signing SAML messages. The most convenient way to use different signing message
-is create class in `WEB` module with addition changes in SecurityContext.
+By default, **OpenSAML** component uses **SHA1** digest algorithm for signing SAML messages. The most convenient way to use different signing message
+is to create a class in the `WEB` module with additional changes in `SecurityContext`.
 
 <details><summary>Click to expand the example</summary>
 
@@ -561,20 +561,29 @@ public class SecurityConfiguration {
 ```
 </details>
 
-
-Declare bean in `saml-dispatcher-spring.xml`
+Create a file in `WEB` module for additional configuration of SAML servlet and declare `SecurityConfiguration` class as bean. For example you could name this file as `saml-dispatcher-spring.xml`.
 
 ```xml
-<!-- Initialization of OpenSAML library-->
-<bean id="samlBootstrap" class="org.springframework.security.saml.SAMLBootstrap"/>
-...
-<bean id="securityConfiguration" class="com.haulmont.addon.saml.web.SecurityConfiguration" init-method="initialize"
-          depends-on="samlBootstrap"/>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+           
+    <bean class="com.haulmont.demo.saml.web.SecurityConfiguration" init-method="initialize" depends-on="samlBootstrap"/>
+
+</beans>
 ```
-Basic configuration initilized in class `org.springframework.security.saml.SAMLBootstrap`. 
-To be sured that security config initialized and not overrides your changes set depends-on attribute with value of bean id of class `org.springframework.security.saml.SAMLBootstrap`.
- 
-All supported signing methods declared in class `org.opensaml.xml.signature.SignatureConstants`
+Basic configuration is initialized in the `org.springframework.security.saml.SAMLBootstrap` class. 
+To make sure that security config is initialized and does not override your changes set depends-on attribute with the value of the bean id of the `org.springframework.security.saml.SAMLBootstrap` class (related bean is declared in `saml-dispatcher-spring.xml` file of the addon).
+
+Then add property `saml.springContextConfig` to the `web-app.properties` file and set value with path of your additional configuration file.
+(The `plus` sign is necessary, see [documentation](https://doc.cuba-platform.com/manual-latest/app_properties.html#additive_app_properties))
+```properties
+saml.springContextConfig = +com/haulmont/demo/saml/saml-dispatcher-spring.xml
+```
+**Pay attention that signing method declared in your configuration will be used for all created saml connections!**
+All supported signing methods are declared in the `org.opensaml.xml.signature.SignatureConstants` class.
 
 # 5. General Application Properties <a name="general-properties"></a>
 
