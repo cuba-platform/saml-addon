@@ -32,10 +32,10 @@ import org.opensaml.DefaultBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
