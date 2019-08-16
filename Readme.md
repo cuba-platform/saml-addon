@@ -8,10 +8,11 @@
   - [3.1. Keystore](#keystore)
     - [3.1.1. Creating Keystore](#keystore-create)
   - [3.2. SAML Connection](#saml-connection)
-  - [3.3. Tenant Login](#tenant-login)
+  - [3.3. Tenant Logging](#tenant-logging)
   - [3.4. SAML Processor](#saml-processor)
 - [4. Implementation](#implementation)
   - [4.1. Extension of the Standard Login Window](#extension-login-window)
+  - [4.2. Setup signing method for SAML messages](#setup-signing-method)
 - [5. General Application Properties](#general-properties)
 
 # 1. Overview
@@ -63,7 +64,7 @@ To use your own key for keystore passwords encryption specify `encryption.key` a
 
 Configuration consists of creating keystore and setting SAML connection.
 
-# 3.1. Keystore <a name="keystore"></a>
+## 3.1. Keystore <a name="keystore"></a>
 
 Before setting SAML connection you need to create keystore containing a username, password, description, and JKS (Java Key Store) file. Your service provider application must have a unique public/private key pair.
 
@@ -106,12 +107,12 @@ To configure SAML connection to identity provider do the following steps:
 11. Click *Active* checkbox. After that, the IdP will be shown in the login screen.
 12. Click *OK* to save settings.
 
-### 3.3 Tenant Login <a name="tenant-login"></a>
+## 3.3 Tenant Logging <a name="tenant-logging"></a>
 
-To simplify login, you can use a specific tenant URL. For example,
-`http://localhost:8080/app/ssocircle?` or `http://localhost:8080/app?tenant=ssocircle`, where `ssocircle` is the `SSO Path` set while configuring SAML Connection. When you use such URL, the system automatically redirects you to the specific IdP.
+Using a specific tenant URL is a simple way to log in. For example,
+`http://localhost:8080/app/saml/login?tenant=ssoPath`, where `ssoPath` is the value of the field with the same name in SAML Connection entity. When you use such URL, the system automatically redirects you to the specific IdP.
 
-### 3.4 SAML Processor <a name="saml-processor"></a>
+## 3.4 SAML Processor <a name="saml-processor"></a>
 
 By default, the component provides `BaseSamlProcessor` which fills in the following attributes for the new user from the SAML session:
 
@@ -179,7 +180,7 @@ Here is an example of the implementation of the whole controller:
 
 <details><summary>Click to expand the example for 6.10</summary>
 
-```xml
+```java
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
@@ -334,7 +335,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
 
 <details><summary>Click to expand the example for 7.0</summary>
 
-```xml
+```java
 import com.haulmont.addon.saml.entity.SamlConnection;
 import com.haulmont.addon.saml.security.SamlSession;
 import com.haulmont.addon.saml.security.config.SamlConfig;
@@ -372,9 +373,6 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 
-/**
- * @author kuchmin
- */
 public class ExtAppLoginWindow extends AppLoginWindow {
 
     private static final Logger log = LoggerFactory.getLogger(ExtAppLoginWindow.class);
@@ -524,6 +522,62 @@ cuba.addon.saml.logAllSamlMessages = true
 ```
 
 Also, you can observe the details of the implementation in the corresponding [demo project](https://git.haulmont.com/app-components/saml-addon-demo).
+
+## 4.2. Setup signing method for SAML messages <a name="setup-signing-method"></a>
+
+By default, OpenSAML component uses SHA1 digest algorithm for signing SAML messages. The most convenient way to use different signing messages
+is to create a class in the `web` module with additional changes in `SecurityContext`.
+
+<details><summary>Click to expand the example</summary>
+
+```java
+import org.opensaml.xml.Configuration;
+import org.opensaml.xml.security.BasicSecurityConfiguration;
+import org.opensaml.xml.signature.SignatureConstants;
+public class SecurityConfiguration {
+ 
+ public void initialize() {
+        BasicSecurityConfiguration configuration = (BasicSecurityConfiguration) Configuration.getGlobalSecurityConfiguration();
+        // Asymmetric key algorithms
+        configuration.registerSignatureAlgorithmURI("RSA", SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
+        configuration.registerSignatureAlgorithmURI("DSA", SignatureConstants.ALGO_ID_SIGNATURE_DSA);
+        configuration.registerSignatureAlgorithmURI("EC", SignatureConstants.ALGO_ID_SIGNATURE_ECDSA_SHA256);
+        // HMAC algorithms
+        configuration.registerSignatureAlgorithmURI("AES", SignatureConstants.ALGO_ID_MAC_HMAC_SHA256);
+        configuration.registerSignatureAlgorithmURI("DESede", SignatureConstants.ALGO_ID_MAC_HMAC_SHA256);
+        // Other signature-related params
+        configuration.setSignatureCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+        configuration.setSignatureHMACOutputLength(null);
+        configuration.setSignatureReferenceDigestMethod(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+    }
+}
+```
+</details>
+
+
+Create a file in the `web` module for additional configuration of SAML servlet and declare the `SecurityConfiguration` class as a bean. For example, you can name this file as `saml-dispatcher-spring.xml`.
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+    <bean class="com.haulmont.demo.saml.web.SecurityConfiguration" init-method="initialize" depends-on="samlBootstrap"/>
+
+</beans>
+```
+Basic configuration is initialized in the `org.springframework.security.saml.SAMLBootstrap` class.
+To make sure that security config is initialized and does not override your changes set depends-on attribute with the value of the bean id of the `org.springframework.security.saml.SAMLBootstrap` class (related bean is declared in the `saml-dispatcher-spring.xml` file of the addon).
+
+Then add the `saml.springContextConfig` property to the `web-app.properties` file and set the value with the path of your additional configuration file. (The `plus` sign is necessary, see [documentation](https://doc.cuba-platform.com/manual-latest/app_properties.html#additive_app_properties)).
+
+```properties
+saml.springContextConfig = +com/haulmont/demo/saml/saml-dispatcher-spring.xml
+```
+
+**Pay attention that the signing method declared in your configuration will be used for all created SAML connections!** 
+All supported signing methods declared in class `org.opensaml.xml.signature.SignatureConstants`
 
 # 5. General Application Properties <a name="general-properties"></a>
 
