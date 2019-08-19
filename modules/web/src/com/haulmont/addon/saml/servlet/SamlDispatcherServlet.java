@@ -15,7 +15,7 @@
  *
  */
 
-package com.haulmont.addon.saml.saml.servlet;
+package com.haulmont.addon.saml.servlet;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang3.StringUtils;
@@ -29,9 +29,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import java.io.File;
 
-/**
- * @author kuchmin
- */
 public class SamlDispatcherServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = -6798133652564117679L;
