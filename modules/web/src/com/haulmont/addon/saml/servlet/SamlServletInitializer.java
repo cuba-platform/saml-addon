@@ -15,34 +15,37 @@
  *
  */
 
-package com.haulmont.addon.saml.saml.servlet;
+package com.haulmont.addon.saml.servlet;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.sys.servlet.events.ServletContextInitializedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 import javax.servlet.*;
 import java.util.EnumSet;
-import java.util.Set;
 
-/**
- * @author kuchmin
- */
-public class SamlServletInitializer implements ServletContainerInitializer {
+@Component(SamlServletInitializer.NAME)
+public class SamlServletInitializer {
+
+    public static final String NAME = "saml_samlInitializer";
 
     protected final Logger log = LoggerFactory.getLogger(SamlServletInitializer.class);
+
     protected static final String SERVLET_NAME = "saml_dispatcher";
     protected static final String SERVLET_PATH = "/saml/*";
     protected static final String SERVLET_CONTEXT_PREFIX = "org.springframework.web.servlet.FrameworkServlet.CONTEXT.";
 
-    @Override
-    public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
-        initServlet(ctx);
-        registerSecurityFilter(ctx);
+    @EventListener
+    protected void init(ServletContextInitializedEvent event) throws ServletException {
+        ServletContext servletCtx = event.getSource();
+        initServlet(servletCtx);
+        registerSecurityFilter(servletCtx);
     }
-
 
     protected void initServlet(ServletContext ctx) throws ServletException {
         log.info("Registering SAML Dispatcher servlet");
@@ -77,7 +80,7 @@ public class SamlServletInitializer implements ServletContainerInitializer {
             filterReg.setInitParameter("dispatchOptionsRequest", "true");
 
         } catch (ClassNotFoundException e) {
-           throw new ServletException(e);
+            throw new ServletException(e);
         }
 
         log.info("Security filter registered");

@@ -75,5 +75,7 @@
                   value="+com/haulmont/addon/saml/web-permissions.xml"/>
         <property name="cuba.mainMessagePack"
                   value="+com.haulmont.addon.saml.web"/>
+        <property name="saml.springContextConfig"
+                  value="+com/haulmont/addon/saml/saml-dispatcher-spring.xml"/>
     </module>
 </app-component>

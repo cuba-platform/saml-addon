@@ -15,10 +15,11 @@
  *
  */
 
-package com.haulmont.addon.saml.saml.servlet;
+package com.haulmont.addon.saml.servlet;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -28,23 +29,26 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import java.io.File;
 
-/**
- * @author kuchmin
- */
 public class SamlDispatcherServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = -6798133652564117679L;
 
-    public static final String DISPATCHER_CONFIG_FILE = "com/haulmont/addon/saml/saml-dispatcher-spring.xml";
+    public static final String DISPATCHER_CONFIG_FILE = "saml.springContextConfig";
 
     private volatile boolean initialized = false;
 
     @Override
     public String getContextConfigLocation() {
+        String configProperty = AppContext.getProperty(DISPATCHER_CONFIG_FILE);
+        if (StringUtils.isBlank(configProperty)) {
+            throw new IllegalStateException("Missing " + DISPATCHER_CONFIG_FILE + " application property");
+        }
+
         //noinspection ConstantConditions
         File baseDir = new File(AppContext.getProperty("cuba.confDir"));
 
-        String[] tokenArray = new StrTokenizer(DISPATCHER_CONFIG_FILE).getTokenArray();
+        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        String[] tokenArray = tokenizer.getTokenArray();
         StringBuilder locations = new StringBuilder();
 
         for (String token : tokenArray) {
