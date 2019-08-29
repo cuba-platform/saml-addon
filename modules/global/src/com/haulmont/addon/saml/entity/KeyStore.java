@@ -69,7 +69,6 @@ public class KeyStore extends StandardEntity {
         return key;
     }
 
-
     public void setLogin(String login) {
         this.login = login;
     }

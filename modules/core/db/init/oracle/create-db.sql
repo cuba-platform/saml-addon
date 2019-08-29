@@ -37,7 +37,7 @@ create table SAMLADDON_KEY_STORE (
     DELETED_BY varchar(50),
     --
     LOGIN varchar2(100) not null,
-    KEYSTORE_ID varchar2(32),
+    KEY_ID varchar2(32),
     PASSWORD varchar2(100) not null,
     DESCRIPTION varchar2(255),
     --

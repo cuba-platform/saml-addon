@@ -282,7 +282,7 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
             SamlConnection connection = getItem();
 
             if (!isCorrectCode(connection)) {
-                fieldGroup.getFieldNN("code").getComponentNN().requestFocus();
+                fieldGroup.getFieldNN("ssoPath").getComponentNN().requestFocus();
                 showNotification(getMessage("errors.incorrectCode"), NotificationType.WARNING);
                 return false;
             }
@@ -292,7 +292,7 @@ public class SamlConnectionEdit extends AbstractEditor<SamlConnection> {
                 return false;
             }
             if (!isUnique(connection)) {
-                fieldGroup.getFieldNN("code").getComponentNN().requestFocus();
+                fieldGroup.getFieldNN("ssoPath").getComponentNN().requestFocus();
                 showNotification(getMessage("errors.sameConnectionAlreadyExist"), NotificationType.WARNING);
                 return false;
             }
