@@ -16,7 +16,7 @@
  */
 
 buildscript {
-    ext.cubaVersion = '7.1-SNAPSHOT'
+    ext.cubaVersion = '7.1.0'
     repositories {
         mavenLocal()
 
@@ -60,7 +60,7 @@ apply(plugin: 'addon-gradle-plugin')
 cuba {
     artifact {
         group = 'com.haulmont.addon.saml'
-        version = '0.2'
+        version = '0.3'
         isSnapshot = true
     }
     tomcat {
