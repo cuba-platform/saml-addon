@@ -18,14 +18,18 @@
 package com.haulmont.addon.saml.servlet;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.sys.AbstractWebAppContextLoader;
+import com.haulmont.cuba.core.sys.servlet.ServletRegistrationManager;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextInitializedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
+import javax.inject.Inject;
 import javax.servlet.*;
 import java.util.EnumSet;
 
@@ -40,26 +44,24 @@ public class SamlServletInitializer {
     protected static final String SERVLET_PATH = "/saml/*";
     protected static final String SERVLET_CONTEXT_PREFIX = "org.springframework.web.servlet.FrameworkServlet.CONTEXT.";
 
+    @Inject
+    protected ServletRegistrationManager servletRegistrationManager;
+
     @EventListener
     protected void init(ServletContextInitializedEvent event) throws ServletException {
         ServletContext servletCtx = event.getSource();
-        initServlet(servletCtx);
-        registerSecurityFilter(servletCtx);
-    }
-
-    protected void initServlet(ServletContext ctx) throws ServletException {
         log.info("Registering SAML Dispatcher servlet");
         try {
-            //noinspection unchecked
-            Class<SamlDispatcherServlet> clazz = (Class<SamlDispatcherServlet>) ReflectionHelper
-                    .loadClass(SamlDispatcherServlet.class.getName());
-            ServletRegistration.Dynamic webdavServletReg = ctx.addServlet(SERVLET_NAME, clazz);
-            webdavServletReg.setLoadOnStartup(8);
-            webdavServletReg.addMapping(SERVLET_PATH);
-        } catch (ClassNotFoundException e) {
-            throw new ServletException("Saml servlet isn't initialized", e);
+            ApplicationContext appCtx = event.getApplicationContext();
+            Servlet servlet = servletRegistrationManager.createServlet(appCtx, SamlDispatcherServlet.class.getName());
+            servlet.init(new AbstractWebAppContextLoader.CubaServletConfig(SERVLET_NAME, servletCtx));
+            servletCtx.addServlet(SERVLET_NAME, servlet).addMapping(SERVLET_PATH);
+        } catch (ServletException e) {
+            throw new RuntimeException("An error occurred while initializing " + SERVLET_NAME + " servlet", e);
         }
         log.info("SAML Dispatcher servlet is registered");
+
+        registerSecurityFilter(servletCtx);
     }
 
     protected void registerSecurityFilter(ServletContext ctx) throws ServletException {
