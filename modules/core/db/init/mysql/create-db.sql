@@ -2,11 +2,11 @@
 create table SAMLADDON_SAML_CONNECTION (
     ID varchar(36) not null,
     VERSION integer not null,
-    CREATE_TS timestamp,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    UPDATE_TS timestamp,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS timestamp,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     --
     NAME varchar(255) not null,
@@ -29,11 +29,11 @@ create table SAMLADDON_SAML_CONNECTION (
 create table SAMLADDON_KEY_STORE (
     ID varchar(36) not null,
     VERSION integer not null,
-    CREATE_TS timestamp,
+    CREATE_TS datetime(3),
     CREATED_BY varchar(50),
-    UPDATE_TS timestamp,
+    UPDATE_TS datetime(3),
     UPDATED_BY varchar(50),
-    DELETE_TS timestamp,
+    DELETE_TS datetime(3),
     DELETED_BY varchar(50),
     --
     LOGIN varchar(100) not null,
