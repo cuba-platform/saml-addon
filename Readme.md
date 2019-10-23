@@ -3,8 +3,12 @@
     <a href="https://travis-ci.org/cuba-platform/saml-addon"><img src="https://travis-ci.org/cuba-platform/saml-addon.svg?branch=master" alt="Build Status" title=""></a>
 </p>
 
+# SAML
+
 - [1. Overview](#overview)
 - [2. Installation](#installation)
+ - [2.1. From the Marketplace](#from-the-marketplace)
+ - [2.2. By Coordinates](#by-coordinates)
 - [3. Configuration](#configuration)
   - [3.1. Keystore](#keystore)
     - [3.1.1. Creating Keystore](#keystore-create)
@@ -16,7 +20,7 @@
   - [4.2. Setup signing method for SAML messages](#setup-signing-method)
 - [5. General Application Properties](#general-properties)
 
-# 1. Overview
+# 1. Overview <a name="overview"></a>
 
 This component provides a readily available instrument of authentication in any CUBA-based application using SAML open standard. That allows identity provider (IdP) to pass authorization credentials to your applications - service providers (SP).
 
@@ -27,41 +31,56 @@ Key features:
  -  separately existing of an identity provider and service providers, which centralizes user management;
  -  user interface to set and configure SAML connections.
 
-See [sample project](https://github.com/cuba-platform/saml-addon-demo), using this add-on.
+See [sample project](https://github.com/cuba-platform/saml-addon-demo) using this add-on.
 
 # 2. Installation <a name="installation"></a>
 
-To install the component in your project, do the following steps:
+The add-on can be added to your project in one of the ways described below. Installation from the Marketplace is the simplest way. The last version of the add-on compatible with the used version of the platform will be installed.
+Also, you can install the add-on by coordinates choosing the required version of the add-on from the table.
 
-1. Open your application in CUBA Studio.
+In case you want to install the add-on by manual editing or by building from sources see the complete add-ons installation guide in [CUBA Platform documentation](https://doc.cuba-platform.com/manual-latest/manual.html#app_components_usage).
 
-2. Open *Project -> Properties* in the project tree.
+## 2.1. From the Marketplace <a name="from-the-marketplace"></a>
 
-3. On the *App components* panel click the *Plus* button next to *Custom components*.
+1. Open your application in CUBA Studio. Check the latest version of CUBA Studio on the [CUBA Platform site](https://www.cuba-platform.com/download/previous-studio/).
+2. Go to *CUBA -> Marketplace* in the main menu.
 
-4. Paste the add-on coordinates in the corresponding field as follows: `group:name:version`.
+ ![marketplace](img/marketplace.png)
 
-  - Artifact group: `com.haulmont.addon.saml`
-  - Artifact name: `saml-global`
-  - Version: `add-on version`
+3. Find the SAML add-on there.
 
-Specify the add-on version compatible with the used version of the CUBA platform.
+ ![addons](img/addons.png)
 
-| Platform Version | Add-on Version |
+4. Click *Install* and apply the changes.
+The add-on corresponding to the used platform version will be installed.
+
+## 2.2. By coordinates <a name="by-coordinates"></a>
+
+1. Open your application in CUBA Studio. Check the latest version of CUBA Studio on the [CUBA Platform site](https://www.cuba-platform.com/download/previous-studio/).
+2. Go to *CUBA -> Marketplace* in the main menu.
+3. Click the icon in the upper-right corner.
+
+ ![by-coordinates](img/by-coordinates.png)
+
+4. Paste the add-on coordinates in the corresponding field as follows:
+
+ `com.haulmont.addon.saml:saml-global:<add-on version>`
+
+ where `<add-on version>` is compatible with the used version of the CUBA platform.
+
+ | Platform Version | Add-on Version |
 |------------------|----------------|
 |7.1.x             | 0.3.0          |
 |7.0.x             | 0.2.2          |
 |6.10.x            | 0.1.0          |
 
-5. Click **OK** to confirm and save project properties.
-
-<!--After that the SAML SSO functions will be available.-->
-
-To use your own key for keystore passwords encryption specify `encryption.key` and `encryption.iv` properties in `app.properties.xml` in the `core` module. Otherwise, the default keys declared in the `app-component.xml` file will be used.
+5. Click *Install* and apply the changes. The add-on will be installed to your project.
 
 # 3. Configuration <a name="configuration"></a>
 
-Configuration consists of creating keystore and setting SAML connection.
+To use your own key for keystore passwords encryption specify `encryption.key` and `encryption.iv` properties in `app.properties.xml` in the `core` module. Otherwise, the default keys declared in the `app-component.xml` file will be used.
+
+The further configuration consists of creating keystore and setting SAML connection.
 
 ## 3.1. Keystore <a name="keystore"></a>
 
