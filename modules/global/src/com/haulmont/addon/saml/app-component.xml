@@ -31,6 +31,8 @@
                   value="+com/haulmont/addon/saml/metadata.xml"/>
         <property name="cuba.viewsConfig"
                   value="+com/haulmont/addon/saml/views.xml"/>
+        <property name="cuba.creditsConfig"
+                  value="+com/haulmont/addon/saml/credits.xml"/>
     </module>
     <module blocks="core"
             dependsOn="global"
