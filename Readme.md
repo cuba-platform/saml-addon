@@ -15,6 +15,7 @@
   - [3.2. SAML Connection](#saml-connection)
   - [3.3. Tenant Logging](#tenant-logging)
   - [3.4. SAML Processor](#saml-processor)
+  - [3.5. Predefined roles](#predefined-roles)
 - [4. Implementation](#implementation)
   - [4.1. Extension of the Standard Login Window](#extension-login-window)
   - [4.2. Setup signing method for SAML messages](#setup-signing-method)
@@ -142,6 +143,10 @@ By default, the component provides `BaseSamlProcessor` which fills in the follow
 
 However, you can define your own implementation of the interface `com.haulmont.addon.saml.core.SamlProcessor` which will handle the SAML data using your own logic.
 The `getName()` method should return a user-friendly name, to show it in the lookup field on the *SAML Connection editor* screen.
+
+## 3.5. Predefined roles <a name="predefined-roles"></a>
+
+- **SAML admin** - full access to SAML configuration
 
 # 4. Implementation <a name="implementation"></a>
 
