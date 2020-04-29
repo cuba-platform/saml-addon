@@ -26,12 +26,20 @@ import com.haulmont.cuba.security.app.role.annotation.EntityAttributeAccess;
 import com.haulmont.cuba.security.app.role.annotation.Role;
 import com.haulmont.cuba.security.app.role.annotation.ScreenAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.role.EntityAttributePermissionsContainer;
 import com.haulmont.cuba.security.role.EntityPermissionsContainer;
 import com.haulmont.cuba.security.role.ScreenPermissionsContainer;
 
-@Role(name = "SAML admin")
+@Role(name = SamlAdminRole.ROLE_NAME)
 public class SamlAdminRole extends AnnotatedRoleDefinition {
+
+    public static final String ROLE_NAME = "saml-admin";
+
+    @Override
+    public String getLocName() {
+        return "SAML admin";
+    }
 
     @EntityAccess(entityClass = SamlConnection.class,
             operations = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
@@ -39,6 +47,8 @@ public class SamlAdminRole extends AnnotatedRoleDefinition {
             operations = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
     @EntityAccess(entityClass = FileDescriptor.class,
             operations = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
+    @EntityAccess(entityClass = Group.class,
+            operations = {EntityOp.READ})
     @Override
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
@@ -47,6 +57,7 @@ public class SamlAdminRole extends AnnotatedRoleDefinition {
     @EntityAttributeAccess(entityClass = SamlConnection.class, modify = "*")
     @EntityAttributeAccess(entityClass = KeyStore.class, modify = "*")
     @EntityAttributeAccess(entityClass = FileDescriptor.class, modify = "*")
+    @EntityAttributeAccess(entityClass = Group.class, modify = "*")
     @Override
     public EntityAttributePermissionsContainer entityAttributePermissions() {
         return super.entityAttributePermissions();
