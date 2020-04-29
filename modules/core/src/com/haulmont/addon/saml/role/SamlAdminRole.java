@@ -31,6 +31,8 @@ import com.haulmont.cuba.security.role.EntityAttributePermissionsContainer;
 import com.haulmont.cuba.security.role.EntityPermissionsContainer;
 import com.haulmont.cuba.security.role.ScreenPermissionsContainer;
 
+import static com.haulmont.cuba.security.entity.EntityOp.*;
+
 @Role(name = SamlAdminRole.ROLE_NAME)
 public class SamlAdminRole extends AnnotatedRoleDefinition {
 
@@ -42,13 +44,13 @@ public class SamlAdminRole extends AnnotatedRoleDefinition {
     }
 
     @EntityAccess(entityClass = SamlConnection.class,
-            operations = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
+            operations = {CREATE, READ, UPDATE, DELETE})
     @EntityAccess(entityClass = KeyStore.class,
-            operations = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
+            operations = {CREATE, READ, UPDATE, DELETE})
     @EntityAccess(entityClass = FileDescriptor.class,
-            operations = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
+            operations = {CREATE, READ, UPDATE, DELETE})
     @EntityAccess(entityClass = Group.class,
-            operations = {EntityOp.READ})
+            operations = {READ})
     @Override
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
