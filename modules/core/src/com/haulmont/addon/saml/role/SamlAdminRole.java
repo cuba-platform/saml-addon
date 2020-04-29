@@ -69,7 +69,8 @@ public class SamlAdminRole extends AnnotatedRoleDefinition {
             "samladdon$SamlConnection.browse",
             "samladdon$SamlConnection.edit",
             "samladdon$KeyStore.browse",
-            "samladdon$KeyStore.edit"})
+            "samladdon$KeyStore.edit",
+            "sec$Group.lookup"})
     @Override
     public ScreenPermissionsContainer screenPermissions() {
         return super.screenPermissions();
