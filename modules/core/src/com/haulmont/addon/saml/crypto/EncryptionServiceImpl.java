@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -78,22 +79,25 @@ public class EncryptionServiceImpl implements EncryptionService {
     }
 
     @Override
-    public String getEncryptedPassword(KeyStore keyStore) {
+    public String getEncryptedPrivateKeyPassword(KeyStore keyStore) {
         if (keyStore.getPassword() == null) {
             return null;
         }
         log.debug("Encrypt password for keystore {}", keyStore);
         try {
-            byte[] encrypted = getCipher(Cipher.ENCRYPT_MODE)
-                    .doFinal(saltedPassword(keyStore).getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(encrypted);
+            return encryptPassword(keyStore.getPassword());
         } catch (Exception e) {
             throw new RuntimeException("Can't encrypt password for keystore " + keyStore, e);
         }
     }
 
-    private String saltedPassword(KeyStore keyStore) {
-        String password = keyStore.getPassword();
+    private String encryptPassword(String password) throws GeneralSecurityException {
+        byte[] encrypted = getCipher(Cipher.ENCRYPT_MODE)
+                .doFinal(saltedPassword(password).getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encrypted);
+    }
+
+    private String saltedPassword(String password) {
         String salt = UUID.randomUUID().toString();
         salt = salt.substring(0, 16);
         salt = StringUtils.rightPad(salt, 16);
@@ -101,18 +105,50 @@ public class EncryptionServiceImpl implements EncryptionService {
     }
 
     @Override
-    public String getPlainPassword(KeyStore keyStore) {
+    public String getPlainPrivateKeyPassword(KeyStore keyStore) {
         if (keyStore.getPassword() == null) {
             return null;
         }
         log.debug("Decrypt password for keystore {}", keyStore);
         try {
-            byte[] password = Base64.getDecoder().decode(keyStore.getPassword());
-            byte[] decrypted = getCipher(Cipher.DECRYPT_MODE).doFinal(password);
-            String saltedPassword = new String(decrypted, StandardCharsets.UTF_8);
-            return saltedPassword.substring(16);
+            return decryptPassword(keyStore.getPassword());
         } catch (Exception e) {
             throw new RuntimeException("Can't decrypt password for keystore " + keyStore, e);
+        }
+    }
+
+    private String decryptPassword(String password) throws GeneralSecurityException {
+        byte[] passwordBytes = Base64.getDecoder().decode(password);
+        byte[] decrypted = getCipher(Cipher.DECRYPT_MODE).doFinal(passwordBytes);
+        String saltedPassword = new String(decrypted, StandardCharsets.UTF_8);
+        return saltedPassword.substring(16);
+    }
+
+    @Nullable
+    @Override
+    public String getEncryptedKeystorePassword(KeyStore keyStore) {
+        if (keyStore.getKeystorePassword() == null) {
+            return null;
+        }
+        log.debug("Encrypt keystore password for keystore {}", keyStore);
+        try {
+            return encryptPassword(keyStore.getKeystorePassword());
+        } catch (Exception e) {
+            throw new RuntimeException("Can't encrypt keystore password for keystore " + keyStore, e);
+        }
+    }
+
+    @Nullable
+    @Override
+    public String getPlainKeystorePassword(KeyStore keyStore) {
+        if (keyStore.getKeystorePassword() == null) {
+            return null;
+        }
+        log.debug("Decrypt keystore password for keystore {}", keyStore);
+        try {
+            return decryptPassword(keyStore.getKeystorePassword());
+        } catch (Exception e) {
+            throw new RuntimeException("Can't decrypt keystore password for keystore " + keyStore, e);
         }
     }
 

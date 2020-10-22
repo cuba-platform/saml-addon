@@ -42,17 +42,26 @@ public class KeystoreListener implements BeforeInsertEntityListener<KeyStore>, B
     @Override
     public void onBeforeUpdate(KeyStore entity, EntityManager entityManager) {
         if (persistenceTools.isDirty(entity, "password")) {
-            setEncryptedPassword(entity);
+            setEncryptedPrivateKeyPassword(entity);
+        }
+        if (persistenceTools.isDirty(entity, "keystorePassword")) {
+            setEncryptedKeystorePassword(entity);
         }
     }
 
     @Override
     public void onBeforeInsert(KeyStore entity, EntityManager entityManager) {
-        setEncryptedPassword(entity);
+        setEncryptedPrivateKeyPassword(entity);
+        setEncryptedKeystorePassword(entity);
     }
 
-    private void setEncryptedPassword(KeyStore entity) {
-        String encryptedPassword = encryptionService.getEncryptedPassword(entity);
+    private void setEncryptedPrivateKeyPassword(KeyStore entity) {
+        String encryptedPassword = encryptionService.getEncryptedPrivateKeyPassword(entity);
         entity.setPassword(encryptedPassword);
+    }
+
+    private void setEncryptedKeystorePassword(KeyStore entity) {
+        String encryptedPassword = encryptionService.getEncryptedKeystorePassword(entity);
+        entity.setKeystorePassword(encryptedPassword);
     }
 }

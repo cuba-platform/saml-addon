@@ -36,10 +36,15 @@
                 <field property="login"/>
                 <field property="password">
                     <passwordField datasource="keyStoreDs"
-                                   property="password"/>
+                                   property="password"
+                                   contextHelpText="msg://passwordContextHelpText"/>
                 </field>
                 <field property="description"/>
                 <field property="key"/>
+                <field property="keystorePassword">
+                    <passwordField datasource="keyStoreDs"
+                                   property="keystorePassword"/>
+                </field>
             </column>
         </fieldGroup>
         <frame id="windowActions"

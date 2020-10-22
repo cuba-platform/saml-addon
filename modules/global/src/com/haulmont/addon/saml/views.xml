@@ -39,6 +39,7 @@
             <property name="key"
                       view="_minimal"/>
             <property name="password"/>
+            <property name="keystorePassword"/>
         </property>
     </view>
     <view class="com.haulmont.addon.saml.entity.SamlConnection"
@@ -57,6 +58,7 @@
             <property name="key"
                       view="_minimal"/>
             <property name="password"/>
+            <property name="keystorePassword"/>
         </property>
     </view>
     <view class="com.haulmont.addon.saml.entity.KeyStore"

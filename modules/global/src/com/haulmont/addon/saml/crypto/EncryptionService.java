@@ -20,10 +20,18 @@ package com.haulmont.addon.saml.crypto;
 
 import com.haulmont.addon.saml.entity.KeyStore;
 
+import javax.annotation.Nullable;
+
 public interface EncryptionService {
     String NAME = "saml_EnctyptionService";
 
-    String getEncryptedPassword(KeyStore keyStore);
+    String getEncryptedPrivateKeyPassword(KeyStore keyStore);
 
-    String getPlainPassword(KeyStore keyStore);
+    String getPlainPrivateKeyPassword(KeyStore keyStore);
+
+    @Nullable
+    String getEncryptedKeystorePassword(KeyStore keyStore);
+
+    @Nullable
+    String getPlainKeystorePassword(KeyStore keyStore);
 }

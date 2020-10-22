@@ -39,6 +39,7 @@ create table SAMLADDON_KEY_STORE (
     LOGIN varchar2(100) not null,
     KEY_ID varchar2(32),
     PASSWORD varchar2(100) not null,
+    KEYSTORE_PASSWORD varchar2(100),
     DESCRIPTION varchar2(255),
     --
     primary key (ID)

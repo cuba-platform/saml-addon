@@ -103,10 +103,12 @@ public class SamlConnectionsKeyManagerImpl extends EmptyKeyManager implements Ke
 
         Resource keystoreResource = new ByteArrayResource(loadFile(fd));
         Map<String, String> passwords = new HashMap<>();
-        passwords.put(connection.getKeystore().getLogin(), encryptionService.getPlainPassword(connection.getKeystore()));
+        passwords.put(connection.getKeystore().getLogin(),
+                encryptionService.getPlainPrivateKeyPassword(connection.getKeystore()));
         String defaultKey = connection.getKeystore().getLogin();
 
-        return new JKSKeyManager(keystoreResource, null, passwords, defaultKey);
+        return new JKSKeyManager(keystoreResource, encryptionService.getPlainKeystorePassword(connection.getKeystore()),
+                passwords, defaultKey);
     }
 
     protected byte[] loadFile(FileDescriptor fd) {

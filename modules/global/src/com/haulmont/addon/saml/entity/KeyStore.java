@@ -36,22 +36,34 @@ public class KeyStore extends StandardEntity {
     private static final long serialVersionUID = 420054615939249553L;
 
     @NotNull
-    @Column(name = "LOGIN", nullable = false, length = 100)
-    protected String login;
-
-    @NotNull
     @Composition
     @OnDelete(DeletePolicy.CASCADE)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "KEY_ID")
     protected FileDescriptor key;
 
+    @Column(name = "KEYSTORE_PASSWORD", length = 100)
+    protected String keystorePassword;
+
+    @NotNull
+    @Column(name = "LOGIN", nullable = false, length = 100)
+    protected String login;
+
+    //private key entry password
     @NotNull
     @Column(name = "PASSWORD", nullable = false, length = 100)
     protected String password;
 
     @Column(name = "DESCRIPTION")
     protected String description;
+
+    public String getKeystorePassword() {
+        return keystorePassword;
+    }
+
+    public void setKeystorePassword(String keystorePassword) {
+        this.keystorePassword = keystorePassword;
+    }
 
     public void setDescription(String description) {
         this.description = description;
