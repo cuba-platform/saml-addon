@@ -15,7 +15,7 @@
   - [3.2. SAML Connection](#saml-connection)
   - [3.3. Tenant Logging](#tenant-logging)
   - [3.4. SAML Processor](#saml-processor)
-  - [3.5. Predefined roles](#predefined-roles)
+  - [3.5. Predefined Roles](#predefined-roles)
 - [4. Implementation](#implementation)
   - [4.1. Extension of the Standard Login Window](#extension-login-window)
   - [4.2. Setup signing method for SAML messages](#setup-signing-method)
@@ -146,7 +146,7 @@ The `getName()` method should return a user-friendly name, to show it in the loo
 
 ## 3.5. Predefined roles <a name="predefined-roles"></a>
 
-- **SAML admin** - full access to SAML configuration
+- **saml-admin** - grants full access to SAML configuration.
 
 # 4. Implementation <a name="implementation"></a>
 
