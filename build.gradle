@@ -95,7 +95,9 @@ configure([globalModule, coreModule, webModule]) {
 
     dependencies {
         compile 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
-        testCompile('junit:junit:4.12')
+        compile 'xalan:xalan:2.7.3'
+        compile 'xerces:xercesImpl:2.12.2'
+        testCompile('junit:junit:4.13.2')
     }
 
     task sourceJar(type: Jar) {
