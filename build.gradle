@@ -85,7 +85,7 @@ dependencies {
     appComponent("com.haulmont.cuba:cuba-global:$cubaVersion")
 }
 
-def hsql = 'org.hsqldb:hsqldb:2.7.4'
+def hsql = 'org.hsqldb:hsqldb:2.5.2'
 
 configure([globalModule, coreModule, webModule]) {
     apply(plugin: 'java')
