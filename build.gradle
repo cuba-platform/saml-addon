@@ -16,7 +16,7 @@
  */
 
 buildscript {
-    ext.cubaVersion = rootProject.hasProperty('cubaVersion') ? rootProject['cubaVersion'] : '7.2.7'
+    ext.cubaVersion = rootProject.hasProperty('cubaVersion') ? rootProject['cubaVersion'] : '7.2-SNAPSHOT'
     repositories {
         mavenLocal()
 
@@ -85,7 +85,7 @@ dependencies {
     appComponent("com.haulmont.cuba:cuba-global:$cubaVersion")
 }
 
-def hsql = 'org.hsqldb:hsqldb:2.4.1'
+def hsql = 'org.hsqldb:hsqldb:2.5.2'
 
 configure([globalModule, coreModule, webModule]) {
     apply(plugin: 'java')
@@ -95,7 +95,9 @@ configure([globalModule, coreModule, webModule]) {
 
     dependencies {
         compile 'org.springframework.security.extensions:spring-security-saml2-core:1.0.10.RELEASE'
-        testCompile('junit:junit:4.12')
+        compile 'xalan:xalan:2.7.3'
+        compile 'xerces:xercesImpl:2.12.2'
+        testCompile('junit:junit:4.13.2')
     }
 
     task sourceJar(type: Jar) {
