@@ -73,9 +73,7 @@ public class EncryptionServiceImpl implements EncryptionService {
             iv = Base64.getDecoder().decode(encryptionIv);
         }
 
-        log.info("EncryptionService has been initialised with key {} and init vector {}",
-                encryptorConfig.getEncryptionKey(), encryptorConfig.getEncryptionIv()
-        );
+        log.info("EncryptionService has been initialised");
     }
 
     @Override
